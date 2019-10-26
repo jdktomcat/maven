@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:elasticsearch="http://www.springframework.org/schema/data/elasticsearch"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/data/elasticsearch http://www.springframework.org/schema/data/elasticsearch/spring-elasticsearch.xsd
+                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- bean管理支持注解 -->
+    <context:component-scan base-package="com.vivo.jdk.pack.es.spring.data"/>
+
+    <!-- Spring data 自动扫描repository接口，生成实现类 -->
+    <elasticsearch:repositories base-package="com.vivo.jdk.pack.es.spring.data.es.spring.data.es.spring.data.repository"/>
+
+    <!-- ip:port换成具体的ip和端口，多个以逗号分隔 -->
+    <elasticsearch:transport-client id="client"
+                                    cluster-nodes="10.101.16.45:9300,10.101.16.46:9300,10.101.16.47:9300,10.101.17.51:9300"
+                                    cluster-name="ads_marketing_es_cluster"/>
+    <!-- ES查询客户端 -->
+    <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
+        <constructor-arg ref="client"/>
+    </bean>
+</beans>

@@ -11,7 +11,13 @@
     <modules>
         <module>spring-es</module>
         <module>spring-data-es</module>
+        <module>toy-agent</module>
+        <module>maven-source</module>
     </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>

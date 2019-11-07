@@ -36,8 +36,7 @@ public class ProfilerMonitorFormer implements ClassFileTransformer {
                 transformed = cl.toBytecode();
             }
         } catch (Exception e) {
-            System.err.println("Could not com.jdktomcat.pack.instrument  " + className
-                    + ",  exception : " + e.getMessage());
+            System.err.println("Could not instrument  " + className + ",  exception : " + e.getMessage());
         } finally {
             if (cl != null) {
                 cl.detach();

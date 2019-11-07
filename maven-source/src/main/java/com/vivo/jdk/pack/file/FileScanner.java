@@ -2,7 +2,6 @@ package com.vivo.jdk.pack.file;
 
 import com.vivo.jdk.pack.excel.ExcelUtil;
 import com.vivo.jdk.pack.md5.MD5Utils;
-import sun.security.provider.MD5;
 
 import java.io.File;
 import java.io.FileNotFoundException;

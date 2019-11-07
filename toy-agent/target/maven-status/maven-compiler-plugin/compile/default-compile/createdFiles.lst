@@ -1,0 +1,3 @@
+com\jdktomcat\pack\instrument\ProfilerMonitorAgent.class
+com\jdktomcat\pack\instrument\ProfilerMonitorFormer.class
+com\jdktomcat\pack\instrument\ProfilerMonitorFormer$1.class

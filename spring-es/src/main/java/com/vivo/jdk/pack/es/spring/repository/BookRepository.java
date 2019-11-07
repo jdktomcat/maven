@@ -1,7 +1,6 @@
 package com.vivo.jdk.pack.es.spring.repository;
 
 import com.vivo.jdk.pack.es.spring.entry.Book;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

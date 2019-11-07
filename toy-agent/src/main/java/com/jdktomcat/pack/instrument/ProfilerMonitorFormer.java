@@ -1,11 +1,13 @@
 package com.jdktomcat.pack.instrument;
 
-import javassist.*;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtBehavior;
+import javassist.CtClass;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 
 /**
@@ -18,9 +20,8 @@ public class ProfilerMonitorFormer implements ClassFileTransformer {
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
-        ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        byte[] transformed = null;
-        System.out.println("Transforming " + className);
+                            ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+        byte[] transformed = classfileBuffer;
         ClassPool pool = ClassPool.getDefault();
         CtClass cl = null;
         try {
@@ -49,11 +50,12 @@ public class ProfilerMonitorFormer implements ClassFileTransformer {
         method.instrument(new ExprEditor() {
             @Override
             public void edit(MethodCall methodCall) throws CannotCompileException {
-                methodCall.replace("{ long stime = System.nanoTime(); $_ = $proceed($$); System.out.println(/"
-                        + methodCall.getClassName()+"."+ methodCall.getMethodName()
-                        + ":/"+(System.nanoTime()+"-stime));}"));
+                if (methodCall.getClassName().startsWith("com.jdk")) {
+                    methodCall.replace("{ long stime = System.nanoTime(); $_ = $proceed($$); System.out.println(\""
+                            + methodCall.getClassName() + "." + methodCall.getMethodName()
+                            + ":\" + (System.nanoTime() - stime));}");
+                }
             }
-
         });
     }
 }

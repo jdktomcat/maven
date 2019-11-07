@@ -13,6 +13,7 @@
         <module>spring-data-es</module>
         <module>toy-agent</module>
         <module>maven-source</module>
+        <module>test-agent</module>
     </modules>
 
     <properties>

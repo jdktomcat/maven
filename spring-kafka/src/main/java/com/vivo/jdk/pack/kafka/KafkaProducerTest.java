@@ -3,11 +3,14 @@ package com.vivo.jdk.pack.kafka;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.PartitionInfo;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 
 /**
  * 类描述：kafka生产者测试类
@@ -30,10 +33,13 @@ public class KafkaProducerTest {
         //生产者发送消息
         String topic = "kafka-topic-learn";
         Producer<String, String> producer = new KafkaProducer<>(props);
+        List<Future<RecordMetadata>> futureList = new ArrayList<>();
         for (int i = 1; i <= 10; i++) {
             String value = "value_" + i;
             ProducerRecord<String, String> msg = new ProducerRecord<>(topic, value);
-            producer.send(msg);
+            futureList.add(producer.send(msg, (metadata, exception) -> {
+                System.out.println(metadata.toString());
+            }));
         }
         //列出topic的相关信息
         List<PartitionInfo> partitions = producer.partitionsFor(topic);
@@ -41,6 +47,6 @@ public class KafkaProducerTest {
             System.out.println(p);
         }
         System.out.println("send message over.");
-        producer.close(100, TimeUnit.MILLISECONDS);
+        producer.close(Duration.ofMillis(100));
     }
 }

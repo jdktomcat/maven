@@ -44,7 +44,7 @@ public class KafkaProducerTest {
         //列出topic的相关信息
         List<PartitionInfo> partitions = producer.partitionsFor(topic);
         for (PartitionInfo p : partitions) {
-            System.out.println(p);
+            System.out.println(p.toString());
         }
         System.out.println("send message over.");
         producer.close(Duration.ofMillis(100));

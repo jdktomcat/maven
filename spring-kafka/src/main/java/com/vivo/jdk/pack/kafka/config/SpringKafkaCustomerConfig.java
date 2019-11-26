@@ -25,7 +25,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 @EnableKafka
 public class SpringKafkaCustomerConfig {
 
-    private static final String GROUP_ID_CONFIG = "fooGroup";
+    public static final String GROUP_ID_CONFIG = "group-1";
 
     private static final String AUTO_OFFSET_RESET_CONFIG = "earliest";
 
@@ -40,6 +40,8 @@ public class SpringKafkaCustomerConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID_CONFIG);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AUTO_OFFSET_RESET_CONFIG);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
         return props;
     }
 

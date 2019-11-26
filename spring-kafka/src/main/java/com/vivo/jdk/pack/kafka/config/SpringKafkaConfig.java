@@ -13,12 +13,15 @@ import org.springframework.messaging.Message;
 @Configuration
 public class SpringKafkaConfig {
 
+    private static final String TOPIC = "ads-marketing-operation-log-dev";
+
+
     /**
      * kafka主题监控监听器回调函数
      *
      * @param message 消息
      */
-    @KafkaListener(id = "fooGroup", topics = "ads-marketing-operation-log-dev")
+    @KafkaListener(id = SpringKafkaCustomerConfig.GROUP_ID_CONFIG, topics = TOPIC)
     public void listen(Message<String> message) {
         System.out.println("Received: " + message);
     }

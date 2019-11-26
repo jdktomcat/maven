@@ -1,6 +1,7 @@
 package com.vivo.jdk.pack.kafka.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 
@@ -11,7 +12,7 @@ import org.springframework.messaging.Message;
  * @date 2019-11-23 17:42
  */
 @Configuration
-public class SpringKafkaConfig {
+public class SpringKafkaConsumerListener {
 
     private static final String TOPIC = "ads-marketing-operation-log-dev";
 
@@ -25,4 +26,5 @@ public class SpringKafkaConfig {
     public void listen(Message<String> message) {
         System.out.println("Received: " + message);
     }
+
 }

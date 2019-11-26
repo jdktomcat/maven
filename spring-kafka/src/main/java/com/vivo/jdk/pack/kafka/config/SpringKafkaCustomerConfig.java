@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -23,6 +24,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
  */
 @Configuration
 @EnableKafka
+@EnableKafkaStreams
 public class SpringKafkaCustomerConfig {
 
     public static final String GROUP_ID_CONFIG = "group-2";

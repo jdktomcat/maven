@@ -25,7 +25,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 @EnableKafka
 public class SpringKafkaCustomerConfig {
 
-    public static final String GROUP_ID_CONFIG = "group-1";
+    public static final String GROUP_ID_CONFIG = "group-2";
 
     private static final String AUTO_OFFSET_RESET_CONFIG = "earliest";
 

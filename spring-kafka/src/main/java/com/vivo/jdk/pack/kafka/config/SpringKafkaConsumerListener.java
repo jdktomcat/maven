@@ -6,7 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 
 /**
- * 类描述：
+ * 类描述：kafka消费者监听器
  *
  * @author 汤旗
  * @date 2019-11-23 17:42
@@ -14,6 +14,9 @@ import org.springframework.messaging.Message;
 @Configuration
 public class SpringKafkaConsumerListener {
 
+    /**
+     * 主题
+     */
     private static final String TOPIC = "ads-marketing-operation-log-dev";
 
 
@@ -26,5 +29,4 @@ public class SpringKafkaConsumerListener {
     public void listen(Message<String> message) {
         System.out.println("Received: " + message);
     }
-
 }

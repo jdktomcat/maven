@@ -22,6 +22,8 @@
         <module>maven-source</module>
         <module>test-agent</module>
         <module>spring-kafka</module>
+        <module>common-limiter</module>
+        <module>modal-test</module>
     </modules>
 
     <properties>

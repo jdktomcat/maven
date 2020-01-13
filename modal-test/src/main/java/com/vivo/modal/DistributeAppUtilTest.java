@@ -11,21 +11,21 @@ import com.vivo.ads.distribute.app.util.DistributeAppUtils;
 public class DistributeAppUtilTest {
 
     /**
-     * 外层密钥（非线上环境使用）
+     * 外层加密解密密钥
      */
-    private static final String OUTER_SECRET_KEY = "b9e075748e054c3486cd62e399dfad50";
+    private static final String OUTER_SECRET = "f5e9856c7d3f4ce4b3b5ee45045936e9";
 
     /**
      * 内层密钥（各业务自行设定）
      */
-    private static final String INNER_SECRET_KEY = "26a82ff4861b457dbe787140a332d26c";
+    private static final String INNER_SECRET = "9d2f32d77cd346be92d3541b02cea04e";
 
 
     public static void main(String[] args) throws Exception {
 
         // 1：加密
         // 业务号
-        String bussinessId = "1";
+        String bussinessId = "2";
         // 自定字段1
         String field1 = "1000";
         // 自定字段2
@@ -40,27 +40,30 @@ public class DistributeAppUtilTest {
         innerTextToEncryptSb.append(field3);
 
         // 内层密文
-        String innerEncryptedText = DistributeAppUtils.encrypt(innerTextToEncryptSb.toString(), INNER_SECRET_KEY);
+        String innerEncryptedText = DistributeAppUtils.encrypt(innerTextToEncryptSb.toString(), INNER_SECRET);
         System.out.println("内层密文= " + innerEncryptedText);
 
-        String platformId = "1";
+        String platformId = "2";
         // 外层密文
-        String outerEncryptedText = DistributeAppUtils.encrypt(platformId + DistributeAppUtils.SEPARATOR + innerEncryptedText, OUTER_SECRET_KEY);
+        String outerEncryptedText = DistributeAppUtils.encrypt(platformId + DistributeAppUtils.SEPARATOR + innerEncryptedText, OUTER_SECRET);
         System.out.println("外层密文= " + outerEncryptedText);
 
-        // 2: 解密
-        String outerDecryptedText = DistributeAppUtils.decrypt(outerEncryptedText, OUTER_SECRET_KEY);
-        // 分解平台号 和 内层密文
-        platformId = outerDecryptedText.split(DistributeAppUtils.SEPARATOR)[0];
-        innerEncryptedText = outerDecryptedText.split(DistributeAppUtils.SEPARATOR)[1];
-        System.out.println("平台号= " + platformId);
-        System.out.println("内层密文= " + innerEncryptedText);
-        // 使用平台号对应的密钥 解密内层密文
-        String innerDecryptedText = DistributeAppUtils.decrypt(innerEncryptedText, INNER_SECRET_KEY);
-        String[] strArray = innerDecryptedText.split(DistributeAppUtils.SEPARATOR);
-        System.out.println("业务号= " + strArray[0]);
-        System.out.println("自定字段1= " +strArray[1]);
-        System.out.println("自定字段2= " +strArray[2]);
-        System.out.println("自定字段3= " +strArray[3]);
+//        String outerEncryptedText1 = "Aiuz012K3YdMu5vkgfyXQcw33GFBYeUUgELeseH1u5pSiMt_IyaK2YhSGesh_XJ5";
+//
+//        // 2: 解密
+//        String outerDecryptedText = DistributeAppUtils.decrypt(outerEncryptedText1, OUTER_SECRET);
+//        // 分解平台号 和 内层密文
+//        String platformId = outerDecryptedText.split(DistributeAppUtils.SEPARATOR)[0];
+//        System.out.println("平台号= " + platformId);
+//
+//
+//
+//        String outerEncryptedText2 = "O4b2UB8leWI1WsTI4emQSe9hOmLTYlAbnsv94rMY61WozQ92eUmnwM5cZWSp-FfEX1O1jYbUE2fofGlu0bXoHAddhrtWrbQ8r9bP01DGkGc";
+//
+//        // 2: 解密
+//        String outerDecryptedText2 = DistributeAppUtils.decrypt(outerEncryptedText2, OUTER_SECRET);
+//        // 分解平台号 和 内层密文
+//        String platformId2 = outerDecryptedText.split(DistributeAppUtils.SEPARATOR)[0];
+//        System.out.println("平台号= " + platformId2);
     }
 }

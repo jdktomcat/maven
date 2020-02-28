@@ -24,6 +24,7 @@
         <module>spring-kafka</module>
         <module>common-limiter</module>
         <module>modal-test</module>
+        <module>rate-limiter</module>
     </modules>
 
     <properties>

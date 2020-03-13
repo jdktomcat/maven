@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+    <context:component-scan base-package="com.jkdtomcat.redis"/>
+    <context:property-placeholder location="classpath:redis.properties"/>
+
+
+    <bean name="genericObjectPoolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+        <property name="maxWaitMillis" value="${zk.redis.maxWaitMillis}"/>
+        <property name="maxTotal" value="${zk.redis.maxTotal}"/>
+        <property name="minIdle" value="${zk.redis.minIdle}"/>
+        <property name="maxIdle" value="${zk.redis.maxIdle}"/>
+    </bean>
+
+    <bean id="jedisCluster" class="com.jkdtomcat.redis.JedisClusterFactory">
+        <property name="clusterAddress" value="${zk.redis.cluster.address}"/>
+        <property name="connectionTimeout" value="${zk.redis.connectionTimeout}"/>
+        <property name="soTimeout" value="${zk.redis.soTimeout}"/>
+        <property name="maxRedirection" value="${zk.redis.maxRedirection}"/>
+        <property name="genericObjectPoolConfig" ref="genericObjectPoolConfig"/>
+    </bean>
+
+</beans>

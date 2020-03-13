@@ -25,6 +25,7 @@
         <module>common-limiter</module>
         <module>modal-test</module>
         <module>rate-limiter</module>
+        <module>redis-module</module>
     </modules>
 
     <properties>

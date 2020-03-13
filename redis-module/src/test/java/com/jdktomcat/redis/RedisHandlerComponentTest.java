@@ -25,7 +25,7 @@ public class RedisHandlerComponentTest {
 
     @Test
     public void test() {
-        String sourceList = "source-list-1";
+        String sourceList = "source-set-1";
         String disList = "{" + sourceList + "}:BAK";
         while (true) {
             String message = jedisCluster.brpoplpush(sourceList, disList, 0);

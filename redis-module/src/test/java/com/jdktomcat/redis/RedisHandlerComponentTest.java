@@ -1,6 +1,5 @@
 package com.jdktomcat.redis;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +8,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.JedisCluster;
 
-import java.util.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 类描述：redis测试类
@@ -28,13 +31,15 @@ public class RedisHandlerComponentTest {
     private JedisCluster jedisCluster;
 
     @Test
-    public void test() {
-        String sourceList = "source-set-1";
+    public void test() throws UnknownHostException {
+        String sourceList = "source-list-1";
         String disList = "{" + sourceList + "}:BAK";
 
         int pageSize = 100;
         List<String> dataList = new ArrayList<>(pageSize);
         long startTime = System.currentTimeMillis();
+        InetAddress inetAddress = InetAddress.getLocalHost();
+        String hostAddress = inetAddress.getHostAddress();
         while (true) {
             String message = jedisCluster.brpoplpush(sourceList, disList, 0);
             if (StringUtils.isNotBlank(message)) {
@@ -46,6 +51,8 @@ public class RedisHandlerComponentTest {
                 startTime = System.currentTimeMillis();
             }
             jedisCluster.lrem(disList, 1, message);
+
         }
+
     }
 }

@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.FactoryBean;

@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 import java.util.Arrays;
 import java.util.List;

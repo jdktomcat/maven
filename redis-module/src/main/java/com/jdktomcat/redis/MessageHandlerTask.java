@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;

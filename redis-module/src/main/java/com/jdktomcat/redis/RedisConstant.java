@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 /**
  * 类描述：redis常量

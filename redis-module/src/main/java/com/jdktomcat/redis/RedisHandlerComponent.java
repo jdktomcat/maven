@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

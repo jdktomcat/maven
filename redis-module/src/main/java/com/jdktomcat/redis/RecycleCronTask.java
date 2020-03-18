@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class RecycleCronTask {
     /**
      * redis客户端
      */
-    @Autowired
+    @Autowired(required = false)
     private JedisCluster jedisCluster;
 
     @Scheduled(cron = "0/5 * * * * ?")

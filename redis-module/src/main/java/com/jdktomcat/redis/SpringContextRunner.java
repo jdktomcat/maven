@@ -1,4 +1,4 @@
-package com.jkdtomcat.redis;
+package com.jdktomcat.redis;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

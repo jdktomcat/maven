@@ -2,6 +2,7 @@ package com.jkdtomcat.redis;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.ArrayList;
@@ -53,20 +54,22 @@ public class MessageHandlerTask implements Runnable {
                 List<String> messageList = new ArrayList<>();
                 do {
                     String message = jedisCluster.brpoplpush(listName, bakListName, 0);
-                    messageList.add(message);
-                    String[] paramArray = message.split("#");
-                    if (paramArray.length == 3) {
-                        String url = paramArray[0];
-                        String infoJson = paramArray[1];
-                        Integer sendCount = Integer.parseInt(paramArray[2]);
-                        List<String> dataList = dataMap.get(url);
-                        if (dataList == null) {
-                            dataList = new ArrayList<>();
+                    if (StringUtils.isNotBlank(message)) {
+                        messageList.add(message);
+                        String[] paramArray = message.split("#");
+                        if (paramArray.length == 3) {
+                            String url = paramArray[0];
+                            String infoJson = paramArray[1];
+                            Integer sendCount = Integer.parseInt(paramArray[2]);
+                            List<String> dataList = dataMap.get(url);
+                            if (dataList == null) {
+                                dataList = new ArrayList<>();
+                            }
+                            dataList.add(infoJson);
+                            messageSendMap.put(infoJson, sendCount);
                         }
-                        dataList.add(infoJson);
-                        messageSendMap.put(infoJson, sendCount);
+                        handleCount++;
                     }
-                    handleCount++;
                 } while (!(handleCount > maxItem) || (System.currentTimeMillis() - startTime > maxTimeLimit));
                 for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
                     String url = entry.getKey();

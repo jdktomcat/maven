@@ -22,6 +22,7 @@
         <property name="maxRedirection" value="${zk.redis.maxRedirection}"/>
         <property name="genericObjectPoolConfig" ref="genericObjectPoolConfig"/>
     </bean>
-    <task:scheduler id="myScheduler" pool-size="5"/>
 
+    <task:annotation-driven/>
+    <task:scheduler id="myScheduler" pool-size="5"/>
 </beans>

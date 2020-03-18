@@ -1,6 +1,5 @@
 package com.jkdtomcat.redis;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.IOException;
@@ -14,7 +13,8 @@ import java.io.IOException;
 public class SpringContextRunner {
 
     public static void main(String[] args) throws IOException {
-        new ClassPathXmlApplicationContext("spring-application.xml");
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-application.xml");
         System.in.read();
+        applicationContext.close();
     }
 }

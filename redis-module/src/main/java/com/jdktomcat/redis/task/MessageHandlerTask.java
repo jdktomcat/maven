@@ -1,5 +1,7 @@
-package com.jdktomcat.redis;
+package com.jdktomcat.redis.task;
 
+import com.jdktomcat.redis.constant.RedisConstant;
+import com.jdktomcat.redis.util.HttpSendUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;

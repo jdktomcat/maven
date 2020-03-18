@@ -1,5 +1,6 @@
-package com.jdktomcat.redis;
+package com.jdktomcat.redis.task;
 
+import com.jdktomcat.redis.constant.RedisConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

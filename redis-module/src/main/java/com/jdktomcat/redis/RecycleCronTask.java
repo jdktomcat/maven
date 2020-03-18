@@ -22,7 +22,7 @@ public class RecycleCronTask {
     /**
      * redis客户端
      */
-    @Autowired(required = false)
+    @Autowired
     private JedisCluster jedisCluster;
 
     @Scheduled(cron = "0/5 * * * * ?")
@@ -32,28 +32,50 @@ public class RecycleCronTask {
         System.out.println("定时回收任务开始：" + simpleDateFormat.format(new Date()));
         long maxExistTime = 10000L;
         for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
-            String listName = RedisConstant.SEND_CLICK_LIST_NAME + ":" + i;
-            String bakListName = String.format(RedisConstant.BAK_LIST_PATTERN, listName);
-            long size = jedisCluster.llen(bakListName);
-            System.out.println(String.format("队列：%s 备份队列：%s 长度：%d", listName, bakListName, size));
-            ArrayList<String> recycleList = new ArrayList<>();
-            for (long index = 0L; index < size; index++) {
-                String member = jedisCluster.lindex(bakListName, index);
-                String[] paramArray = member.split("#");
-                if (paramArray.length == 4) {
-                    long createTime = Long.parseLong(paramArray[3]);
-                    if (System.currentTimeMillis() - createTime >= maxExistTime) {
-                        recycleList.add(paramArray[0] + "#" + paramArray[1] + "#" + paramArray[2]);
+            if (acquireLock(i)) {
+                String listName = RedisConstant.SEND_CLICK_LIST_NAME + ":" + i;
+                String bakListName = String.format(RedisConstant.BAK_LIST_PATTERN, listName);
+                long size = jedisCluster.llen(bakListName);
+                System.out.println(String.format("队列：%s 备份队列：%s 长度：%d", listName, bakListName, size));
+                ArrayList<String> recycleList = new ArrayList<>();
+                for (long index = 0L; index < size; index++) {
+                    String member = jedisCluster.lindex(bakListName, index);
+                    String[] paramArray = member.split("#");
+                    if (paramArray.length == 4) {
+                        long createTime = Long.parseLong(paramArray[3]);
+                        if (System.currentTimeMillis() - createTime >= maxExistTime) {
+                            recycleList.add(paramArray[0] + "#" + paramArray[1] + "#" + paramArray[2]);
+                            jedisCluster.lrem(bakListName, 1, member);
+                        }
+                    } else {
                         jedisCluster.lrem(bakListName, 1, member);
                     }
-                } else {
-                    jedisCluster.lrem(bakListName, 1, member);
                 }
-            }
-            if (CollectionUtils.isNotEmpty(recycleList)) {
-                jedisCluster.lpush(listName, (String[]) recycleList.toArray());
+                if (CollectionUtils.isNotEmpty(recycleList)) {
+                    jedisCluster.lpush(listName, (String[]) recycleList.toArray());
+                }
+                releaseLock(i);
             }
         }
         System.out.println("定时回收任务结束：" + simpleDateFormat.format(new Date()) + "耗时：" + (System.currentTimeMillis() - startTime) + "ms");
+    }
+
+    /**
+     * 获取分布式锁
+     *
+     * @param index 索引
+     * @return 成功：true 失败：false
+     */
+    private boolean acquireLock(Integer index) {
+        return "ok".equalsIgnoreCase(jedisCluster.set(RedisConstant.RECYCLE_BAK_LIST_MUTEX + index, "1", "NX", "ex", 10000));
+    }
+
+    /**
+     * 释放分布式锁
+     *
+     * @param index 索引
+     */
+    private void releaseLock(Integer index) {
+        jedisCluster.del(RedisConstant.RECYCLE_BAK_LIST_MUTEX + index);
     }
 }

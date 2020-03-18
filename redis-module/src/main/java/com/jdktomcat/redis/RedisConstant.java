@@ -24,6 +24,11 @@ public class RedisConstant {
     public static final String BAK_LIST_PATTERN = "{%s}:BAK";
 
     /**
+     * 互斥锁
+     */
+    public static final String RECYCLE_BAK_LIST_MUTEX = "recycle:bak:list:mutex:";
+
+    /**
      * 列表容量
      */
     public static final int LIST_CAPACITY = 100;

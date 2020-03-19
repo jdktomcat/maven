@@ -1,17 +1,20 @@
 package com.jdktomcat.redis.kafka;
 
 import lombok.Data;
-import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * 类描述：kafka配置
@@ -67,12 +70,12 @@ public class KafkaConsumerConfig {
      * 自动提交间隔
      */
     @Value("${kafka.auto.commit.interval:1000}")
-    private Long autoCommitInterval;
+    private Integer autoCommitInterval;
 
     /**
      * 一次获取条数
      */
-    @Value("${kafka.max.poll.records:1000}")
+    @Value("${kafka.max.poll.records:10}")
     private Integer maxPollRecords;
 
 
@@ -88,7 +91,7 @@ public class KafkaConsumerConfig {
         props.put("client.id", clientId);
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("auto.commit.interval.ms", autoCommitInterval);
+        props.put("enable.auto.commit", "false");
         props.put("max.poll.records", maxPollRecords);
         logger.info(String.format("kafka消费者配置信息：%s", props.toString()));
         return props;
@@ -101,15 +104,18 @@ public class KafkaConsumerConfig {
     public void init() {
         Properties props = this.getConfigProperties();
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
-        kafkaConsumer.subscribe(Arrays.asList(topic), new ConsumerRebalanceListener() {
-            @Override
-            public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-                logger.info("revoked:" + partitions.size());
-            }
-
-            @Override
-            public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-                logger.info("assigned:" + partitions.size());
+        kafkaConsumer.subscribe(Arrays.asList(topic));
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            while (true) {
+                ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(100L));
+                if (!consumerRecords.isEmpty()) {
+                    Iterator<ConsumerRecord<String, String>> iterator = consumerRecords.iterator();
+                    while (iterator.hasNext()) {
+                        ConsumerRecord consumerRecord = iterator.next();
+                        logger.info(String.format("offset:%s,消息键：%s，消息值：%s", consumerRecord.offset(), consumerRecord.key(), consumerRecord.value()));
+                    }
+                }
             }
         });
     }

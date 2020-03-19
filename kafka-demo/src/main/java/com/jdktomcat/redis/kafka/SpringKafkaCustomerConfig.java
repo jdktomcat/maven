@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.messaging.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +32,15 @@ public class SpringKafkaCustomerConfig {
      */
     public static final String GROUP_ID_CONFIG = "ads-marketing";
 
+    /**
+     * 重置
+     */
     private static final String AUTO_OFFSET_RESET_CONFIG = "earliest";
+
+    /**
+     * 主题
+     */
+    private static final String TOPIC = "send_click_topic";
 
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -63,7 +73,17 @@ public class SpringKafkaCustomerConfig {
     @Bean
     public KafkaStreamsConfiguration defaultKafkaStreamsConfig() {
         Map<String, Object> dataMap = consumerConfigs();
-        dataMap.put("application.id","ads");
+        dataMap.put("application.id", "ads");
         return new KafkaStreamsConfiguration(dataMap);
+    }
+
+    /**
+     * kafka主题监控监听器回调函数
+     *
+     * @param message 消息
+     */
+    @KafkaListener(id = SpringKafkaCustomerConfig.GROUP_ID_CONFIG, topics = TOPIC)
+    public void listen(Message<String> message) {
+        System.out.println("Received: " + message);
     }
 }

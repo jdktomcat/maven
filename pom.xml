@@ -26,6 +26,7 @@
         <module>modal-test</module>
         <module>rate-limiter</module>
         <module>redis-module</module>
+        <module>kafka-demo</module>
     </modules>
 
     <properties>

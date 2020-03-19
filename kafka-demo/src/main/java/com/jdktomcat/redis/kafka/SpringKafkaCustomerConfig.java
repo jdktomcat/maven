@@ -1,6 +1,7 @@
 package com.jdktomcat.redis.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +15,11 @@ import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
-import org.springframework.messaging.Message;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.support.Acknowledgment;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,6 +84,18 @@ public class SpringKafkaCustomerConfig {
     }
 
     @Bean
+    public KafkaListenerContainerFactory<?> batchFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        factory.setConcurrency(5);
+        //设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG
+        factory.setBatchListener(true);
+        //设置提交偏移量的方式
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return factory;
+    }
+
+    @Bean
     public KafkaStreamsConfiguration defaultKafkaStreamsConfig() {
         Map<String, Object> dataMap = consumerConfigs();
         dataMap.put("application.id", "ads");
@@ -90,10 +105,14 @@ public class SpringKafkaCustomerConfig {
     /**
      * kafka主题监控监听器回调函数
      *
-     * @param message 消息
+     * @param records 消息
+     * @param ack     消息回执
      */
-    @KafkaListener(topics = TOPIC)
-    public void listen(Message<String> message) {
-        logger.info("Received: " + message);
+    @KafkaListener(topics = TOPIC, containerFactory = "batchFactory")
+    public void listen(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
+        for (ConsumerRecord<String, String> record : records) {
+            logger.info("Received: " + record.key() + "====" + record.value());
+        }
+        ack.acknowledge();
     }
 }

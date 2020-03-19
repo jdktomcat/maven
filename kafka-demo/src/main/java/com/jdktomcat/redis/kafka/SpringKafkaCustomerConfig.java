@@ -92,7 +92,7 @@ public class SpringKafkaCustomerConfig {
      *
      * @param message 消息
      */
-    @KafkaListener(id = SpringKafkaCustomerConfig.GROUP_ID_CONFIG, topics = TOPIC)
+    @KafkaListener(topics = TOPIC)
     public void listen(Message<String> message) {
         logger.info("Received: " + message);
     }

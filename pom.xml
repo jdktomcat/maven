@@ -27,6 +27,7 @@
         <module>rate-limiter</module>
         <module>redis-module</module>
         <module>kafka-demo</module>
+        <module>spring-redis</module>
     </modules>
 
     <properties>

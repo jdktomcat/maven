@@ -2,6 +2,7 @@ package com.jdktomcat.redis.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,12 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class SpringKafkaCustomerConfig {
+
+    /**
+     * 日志
+     */
+    private static final Logger logger = Logger.getLogger(SpringKafkaCustomerConfig.class);
+
     /**
      * 消费组
      */
@@ -42,6 +49,9 @@ public class SpringKafkaCustomerConfig {
      */
     private static final String TOPIC = "send_click_topic";
 
+    /**
+     * kafka服务器配置
+     */
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
@@ -84,6 +94,6 @@ public class SpringKafkaCustomerConfig {
      */
     @KafkaListener(id = SpringKafkaCustomerConfig.GROUP_ID_CONFIG, topics = TOPIC)
     public void listen(Message<String> message) {
-        System.out.println("Received: " + message);
+        logger.info("Received: " + message);
     }
 }

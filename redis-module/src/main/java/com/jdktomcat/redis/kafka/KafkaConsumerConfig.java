@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * 类描述：kafka配置
@@ -66,11 +68,12 @@ public class KafkaConsumerConfig {
      * 初始化
      */
     @PostConstruct
-    public void init(){
+    public void init() {
         Properties props = new Properties();
         props.put("zookeeper.connect", zk);
         props.put("group.id", groupId);
         props.put("zookeeper.session.timeout.ms", zkSessionTimeout);
+        props.put("zookeeper.connection.timeout.ms", zkSessionTimeout);
         props.put("zookeeper.sync.time.ms", zkSyncTime);
         props.put("auto.commit.interval.ms", autoCommitInterval);
         ConsumerConnector consumer = Consumer.createJavaConsumerConnector(new ConsumerConfig(props));
@@ -79,7 +82,8 @@ public class KafkaConsumerConfig {
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap);
         KafkaStream<byte[], byte[]> stream = consumerMap.get(topic).get(0);
         final ConsumerIterator<byte[], byte[]> it = stream.iterator();
-        Runnable executor = () -> {
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
             while (it.hasNext()) {
                 System.out.println("************** receive：" + new String(it.next().message()));
                 try {
@@ -88,7 +92,6 @@ public class KafkaConsumerConfig {
                     e.printStackTrace();
                 }
             }
-        };
-        new Thread(executor).start();
+        });
     }
 }

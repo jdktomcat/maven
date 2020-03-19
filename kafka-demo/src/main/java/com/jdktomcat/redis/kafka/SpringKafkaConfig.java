@@ -1,41 +1,31 @@
 package com.jdktomcat.redis.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.log4j.Logger;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.support.Acknowledgment;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * 类描述：kafka消费者配置
+ * 类描述：Kafka配置
  *
- * @author 汤旗
- * @date 2019-11-26 09:56
+ * @author 11072131
+ * @date 2020-03-2020/3/19 20:36
  */
 @Configuration
-@EnableKafka
-public class SpringKafkaCustomerConfig {
+public class SpringKafkaConfig {
 
-    /**
-     * 日志
-     */
-    private static final Logger logger = Logger.getLogger(SpringKafkaCustomerConfig.class);
 
     /**
      * 消费组
@@ -46,11 +36,6 @@ public class SpringKafkaCustomerConfig {
      * 重置
      */
     private static final String AUTO_OFFSET_RESET_CONFIG = "earliest";
-
-    /**
-     * 主题
-     */
-    private static final String TOPIC = "send_click_topic";
 
     /**
      * kafka服务器配置
@@ -103,16 +88,37 @@ public class SpringKafkaCustomerConfig {
     }
 
     /**
-     * kafka主题监控监听器回调函数
+     * 属性配置
      *
-     * @param records 消息
-     * @param ack     消息回执
+     * @return 集合
      */
-    @KafkaListener(topics = TOPIC, containerFactory = "batchFactory")
-    public void listen(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
-        for (ConsumerRecord<String, String> record : records) {
-            logger.info("Received: " + record.key() + "====" + record.value());
-        }
-        ack.acknowledge();
+    @Bean
+    public Map<String, Object> producerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        return props;
     }
+
+    /**
+     * 生产者工厂类
+     *
+     * @return 生产者工厂类
+     */
+    @Bean
+    public ProducerFactory<String, String> producerFactory() {
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
+    }
+
+    /**
+     * kafka客户端
+     *
+     * @return kafka客户端
+     */
+    @Bean
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
+    }
+
 }

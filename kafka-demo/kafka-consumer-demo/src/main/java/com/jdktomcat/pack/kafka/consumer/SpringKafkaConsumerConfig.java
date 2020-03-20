@@ -27,7 +27,7 @@ public class SpringKafkaConsumerConfig {
     /**
      * 消费组
      */
-    public static final String GROUP_ID_CONFIG = "ads-marketing-1";
+    public static final String GROUP_ID_CONFIG = "ads-marketing";
 
     /**
      * 重置

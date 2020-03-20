@@ -1,31 +1,39 @@
-package com.jdktomcat.redis.kafka;
+package com.jdktomcat.pack.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.core.*;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.support.Acknowledgment;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * 类描述：Kafka配置
+ * 类描述：Kafka消费者配置
  *
  * @author 11072131
  * @date 2020-03-2020/3/19 20:36
  */
 @Configuration
-public class SpringKafkaConfig {
+public class SpringKafkaConsumerConfig {
 
+    /**
+     * 日志
+     */
+    private static final Logger logger = Logger.getLogger(SpringKafkaConsumerConfig.class);
 
     /**
      * 消费组
@@ -88,37 +96,16 @@ public class SpringKafkaConfig {
     }
 
     /**
-     * 属性配置
+     * kafka主题监控监听器回调函数
      *
-     * @return 集合
+     * @param records 消息
+     * @param ack     消息回执
      */
-    @Bean
-    public Map<String, Object> producerConfigs() {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        return props;
+    @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
+    public void listen(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
+        for (ConsumerRecord<String, String> record : records) {
+            logger.info("Received: " + record.key() + "====" + record.value());
+        }
+        ack.acknowledge();
     }
-
-    /**
-     * 生产者工厂类
-     *
-     * @return 生产者工厂类
-     */
-    @Bean
-    public ProducerFactory<String, String> producerFactory() {
-        return new DefaultKafkaProducerFactory<>(producerConfigs());
-    }
-
-    /**
-     * kafka客户端
-     *
-     * @return kafka客户端
-     */
-    @Bean
-    public KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
-
 }

@@ -54,7 +54,7 @@ public class SpringKafkaProducer {
         for (int i = 0; i < coreNum; i++) {
             executor.execute(() -> {
                 while (true) {
-                    send(RandomStringUtils.randomAscii(20));
+                    send(RandomStringUtils.randomAlphabetic(20));
                 }
             });
         }

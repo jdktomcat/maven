@@ -24,6 +24,9 @@
         <module>spring-kafka</module>
         <module>common-limiter</module>
         <module>rate-limiter</module>
+        <module>redis-module</module>
+        <module>kafka-demo</module>
+        <module>spring-redis</module>
         <module>zk-dis-lock</module>
     </modules>
 

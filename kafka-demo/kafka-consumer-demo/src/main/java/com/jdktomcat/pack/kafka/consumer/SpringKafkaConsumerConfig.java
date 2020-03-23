@@ -27,12 +27,14 @@ public class SpringKafkaConsumerConfig {
     /**
      * 消费组
      */
-    public static final String GROUP_ID_CONFIG = "ads-marketing";
+    @Value("${kafka.customer.group.id:ads_marketing}")
+    private String groupIdConfig;
 
     /**
      * 重置
      */
-    private static final String AUTO_OFFSET_RESET_CONFIG = "earliest";
+    @Value("${kafka.auto.offset.reset.config:earliest}")
+    private String  autoOffsetReset;
 
     /**
      * kafka服务器配置
@@ -40,16 +42,29 @@ public class SpringKafkaConsumerConfig {
     @Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    /**
+     * kafka一次消费信息后多长时间自动提交（ms）
+     */
+    @Value("kafka.max.auto.commit.interval:200")
+    private Integer maxPollInterval;
+
+
+    /**
+     * kafka一次消费多少条数据
+     */
+    @Value("kafka.max.poll.record:100")
+    private Integer maxPollRecord;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID_CONFIG);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, AUTO_OFFSET_RESET_CONFIG);
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 200);
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 100);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollInterval);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecord);
         return props;
     }
 
@@ -69,7 +84,7 @@ public class SpringKafkaConsumerConfig {
     public KafkaListenerContainerFactory<?> batchFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(1);
+        factory.setConcurrency(5);
         //设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG
         factory.setBatchListener(true);
         //设置提交偏移量的方式

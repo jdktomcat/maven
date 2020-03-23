@@ -42,7 +42,7 @@ public class KafkaConsumerConfig {
     /**
      * 主题
      */
-    @Value("${kafka.send.click.topic:send_click}")
+    @Value("${kafka.send.click.topic:send_click_topic}")
     private String topic;
 
     /**

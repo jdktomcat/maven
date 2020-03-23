@@ -113,40 +113,42 @@ public class KafkaConsumerConfig {
     @PostConstruct
     public void init() {
         Properties props = this.getConfigProperties();
-        KafkaConsumer<String, Object> kafkaConsumer = new KafkaConsumer<>(props);
-        kafkaConsumer.subscribe(Arrays.asList(topic));
-        Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            while (true) {
-                ConsumerRecords<String, Object> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(100L));
-                if (!consumerRecords.isEmpty()) {
-                    Iterator<ConsumerRecord<String, Object>> iterator = consumerRecords.iterator();
-                    Map<Integer, List<String>> dataMap = new HashMap<>();
-                    while (iterator.hasNext()) {
-                        ConsumerRecord consumerRecord = iterator.next();
-                        String url = RandomStringUtils.randomAlphabetic(20);
-                        Integer queueIndex = Math.abs(url.hashCode() % 24);
-                        String message = consumerRecord.value().toString();
-                        String member = String.format("%s||%s||%s||%s", url, message, System.currentTimeMillis(), 0);
-                        List<String> dataList = dataMap.get(queueIndex);
-                        if (CollectionUtils.isEmpty(dataList)) {
-                            dataList = new ArrayList<>();
-                            dataMap.put(queueIndex, dataList);
+        Executor executor = Executors.newFixedThreadPool(5);
+        for (int i = 0; i < 5; i++) {
+            executor.execute(() -> {
+                KafkaConsumer<String, Object> kafkaConsumer = new KafkaConsumer<>(props);
+                kafkaConsumer.subscribe(Arrays.asList(topic));
+                while (true) {
+                    ConsumerRecords<String, Object> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(100L));
+                    if (!consumerRecords.isEmpty()) {
+                        Iterator<ConsumerRecord<String, Object>> iterator = consumerRecords.iterator();
+                        Map<Integer, List<String>> dataMap = new HashMap<>();
+                        while (iterator.hasNext()) {
+                            ConsumerRecord consumerRecord = iterator.next();
+                            String url = RandomStringUtils.randomAlphabetic(20);
+                            Integer queueIndex = Math.abs(url.hashCode() % 24);
+                            String message = consumerRecord.value().toString();
+                            String member = String.format("%s||%s||%s||%s", url, message, System.currentTimeMillis(), 0);
+                            List<String> dataList = dataMap.get(queueIndex);
+                            if (CollectionUtils.isEmpty(dataList)) {
+                                dataList = new ArrayList<>();
+                                dataMap.put(queueIndex, dataList);
+                            }
+                            dataList.add(member);
+                            logger.info(String.format("partition:%s,offset:%s,消息键：%s，消息值：%s", consumerRecord.partition(), consumerRecord.offset(), consumerRecord.key(), consumerRecord.value()));
                         }
-                        dataList.add(member);
-                        logger.info(String.format("offset:%s,消息键：%s，消息值：%s", consumerRecord.offset(), consumerRecord.key(), consumerRecord.value()));
-                    }
-                    Long count = 0L;
-                    for (Map.Entry<Integer, List<String>> entry : dataMap.entrySet()) {
-                        count += jedisCluster.lpush(RedisConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
-                    }
-                    try {
-                        Thread.sleep(count);
-                    } catch (InterruptedException e) {
-                        logger.error("消费kafka消息异常：" + e.getMessage());
+                        Long count = 0L;
+                        for (Map.Entry<Integer, List<String>> entry : dataMap.entrySet()) {
+                            count += jedisCluster.lpush(RedisConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
+                        }
+                        try {
+                            Thread.sleep(count);
+                        } catch (InterruptedException e) {
+                            logger.error("消费kafka消息异常：" + e.getMessage());
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 }

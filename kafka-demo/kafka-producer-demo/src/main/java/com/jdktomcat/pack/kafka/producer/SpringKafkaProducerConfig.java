@@ -85,7 +85,7 @@ public class SpringKafkaProducerConfig {
      */
     public void send(String message) {
         logger.info("发送消息：" + message);
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("send_click_topic", message);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("send_click", message);
         future.addCallback(result -> {
             logger.info("发送成功：" + result.toString());
         }, ex -> {

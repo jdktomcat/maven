@@ -58,14 +58,15 @@ public class MessageHandlerTask implements Runnable {
                     String message = jedisCluster.brpoplpush(listName, bakListName, 0);
                     if (StringUtils.isNotBlank(message)) {
                         messageList.add(message);
-                        String[] paramArray = message.split("#");
-                        if (paramArray.length == 3) {
+                        String[] paramArray = message.split("||");
+                        if (paramArray.length == 4) {
                             String url = paramArray[0];
                             String infoJson = paramArray[1];
-                            Integer sendCount = Integer.parseInt(paramArray[2]);
+                            Integer sendCount = Integer.parseInt(paramArray[3]);
                             List<String> dataList = dataMap.get(url);
                             if (dataList == null) {
                                 dataList = new ArrayList<>();
+                                dataMap.put(url, dataList);
                             }
                             dataList.add(infoJson);
                             messageSendMap.put(infoJson, sendCount);
@@ -90,14 +91,14 @@ public class MessageHandlerTask implements Runnable {
                     List<String> wasteDataList = new ArrayList<>();
                     List<String> recycleDataList = new ArrayList<>();
                     for (String message : failDataList) {
-                        String[] paramArray = message.split("#");
+                        String[] paramArray = message.split("||");
                         String url = paramArray[0];
                         String infoJson = paramArray[1];
                         Integer sendCount = Integer.parseInt(paramArray[2]);
                         if (sendCount + 1 > sendLimit) {
                             wasteDataList.add(message);
                         } else {
-                            recycleDataList.add(url + "#" + infoJson + "#" + (sendCount + 1));
+                            recycleDataList.add(String.format("%s||%s||%s||%s", url, infoJson, System.currentTimeMillis(), (sendCount + 1)));
                         }
                     }
                     if (CollectionUtils.isNotEmpty(recycleDataList)) {

@@ -11,7 +11,7 @@ public class RedisConstant {
     /**
      * 队列个数
      */
-    public static final int LIST_NUM = 5;
+    public static final int LIST_NUM = 25;
 
     /**
      * 队列名称前缀

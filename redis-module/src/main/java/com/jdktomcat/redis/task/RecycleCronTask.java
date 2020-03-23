@@ -4,6 +4,7 @@ import com.jdktomcat.redis.constant.RedisConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
 
@@ -31,12 +32,13 @@ public class RecycleCronTask {
     @Autowired
     private JedisCluster jedisCluster;
 
-//    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/5 * * * * ?")
     public void recycle() {
         long startTime = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
         logger.info("定时回收任务开始：" + simpleDateFormat.format(new Date()));
-        long maxExistTime = 10000L;
+        long maxExistTime = 1000L;
+        int handleCount = 25;
         for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
             if (acquireLock(i)) {
                 String listName = RedisConstant.SEND_CLICK_LIST_NAME + ":" + i;
@@ -44,21 +46,21 @@ public class RecycleCronTask {
                 long size = jedisCluster.llen(bakListName);
                 logger.info(String.format("队列：%s 备份队列：%s 长度：%d", listName, bakListName, size));
                 ArrayList<String> recycleList = new ArrayList<>();
-                for (long index = 0L; index < size; index++) {
-                    String member = jedisCluster.lindex(bakListName, index);
-                    String[] paramArray = member.split("#");
+                for (long index = 1L; index <= handleCount; index++) {
+                    String member = jedisCluster.lindex(bakListName, -index);
+                    String[] paramArray = member.split("||");
                     if (paramArray.length == 4) {
-                        long createTime = Long.parseLong(paramArray[3]);
+                        long createTime = Long.parseLong(paramArray[2]);
                         if (System.currentTimeMillis() - createTime >= maxExistTime) {
-                            recycleList.add(paramArray[0] + "#" + paramArray[1] + "#" + paramArray[2]);
-                            jedisCluster.lrem(bakListName, 1, member);
+                            recycleList.add(String.format("%s||%s||%s||%s", paramArray[0], paramArray[1], System.currentTimeMillis(), paramArray[3]));
+                            jedisCluster.lrem(bakListName, -1, member);
                         }
                     } else {
-                        jedisCluster.lrem(bakListName, 1, member);
+                        jedisCluster.lrem(bakListName, -1, member);
                     }
                 }
                 if (CollectionUtils.isNotEmpty(recycleList)) {
-                    jedisCluster.lpush(listName, (String[]) recycleList.toArray());
+                    jedisCluster.rpush(listName, recycleList.toArray(new String[recycleList.size()]));
                 }
                 releaseLock(i);
             }

@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.log4j.Logger;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ public class SpringKafkaConsumerListener {
      * @param records 消息
      * @param ack     消息回执
      */
-    @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
+    @KafkaListener(containerFactory = "batchFactory", topicPartitions = {@TopicPartition(topic = "send_click_topic", partitions = {"0", "1", "2", "3", "4"})})
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         for (ConsumerRecord<String, String> record : records) {
             logger.info(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));

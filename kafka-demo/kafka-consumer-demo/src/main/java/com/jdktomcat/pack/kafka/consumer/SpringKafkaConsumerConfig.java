@@ -52,7 +52,7 @@ public class SpringKafkaConsumerConfig {
     /**
      * kafka一次消费多少条数据
      */
-    @Value("${kafka.max.poll.record:100}")
+    @Value("${kafka.max.poll.record:10}")
     private Integer maxPollRecord;
 
     @Bean

@@ -32,7 +32,7 @@ public class SpringKafkaConsumerListener {
     @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         for (ConsumerRecord<String, String> record : records) {
-            logger.info(String.format("消费者获取，消息offset:%s,消息键:%s,消息体：%s", record.offset(), record.key(), record.value()));
+            logger.info(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));
         }
         ack.acknowledge();
     }

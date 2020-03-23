@@ -34,7 +34,7 @@ public class SpringKafkaConsumerConfig {
      * 重置
      */
     @Value("${kafka.auto.offset.reset.config:earliest}")
-    private String  autoOffsetReset;
+    private String autoOffsetReset;
 
     /**
      * kafka服务器配置
@@ -45,14 +45,14 @@ public class SpringKafkaConsumerConfig {
     /**
      * kafka一次消费信息后多长时间自动提交（ms）
      */
-    @Value("kafka.max.auto.commit.interval:200")
+    @Value("${kafka.max.auto.commit.interval:200}")
     private Integer maxPollInterval;
 
 
     /**
      * kafka一次消费多少条数据
      */
-    @Value("kafka.max.poll.record:100")
+    @Value("${kafka.max.poll.record:100}")
     private Integer maxPollRecord;
 
     @Bean

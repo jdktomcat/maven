@@ -11,14 +11,12 @@
 
     <artifactId>zk-dis-lock</artifactId>
 
-   <dependencies>
-       <dependency>
-           <groupId>org.apache.curator</groupId>
-           <artifactId>curator-recipes</artifactId>
-           <version>2.7.0</version>
-       </dependency>
-   </dependencies>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>2.7.0</version>
+        </dependency>
         <dependency>
             <groupId>com.squareup.okhttp</groupId>
             <artifactId>okhttp</artifactId>

@@ -2,9 +2,11 @@ package com.jdktomcat.redis.task;
 
 import com.jdktomcat.redis.constant.SendDataConstant;
 import com.jdktomcat.redis.util.HttpSendUtil;
+import com.jdktomcat.redis.zk.ZkCuratorDistributedState;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.ArrayList;
@@ -20,9 +22,9 @@ import java.util.Map;
 public class MessageHandlerTask implements Runnable {
 
     /**
-     * redis客户端
+     * 日志
      */
-    private JedisCluster jedisCluster;
+    private static Logger logger = Logger.getLogger(MessageHandlerTask.class);
 
     /**
      * 索引
@@ -30,17 +32,34 @@ public class MessageHandlerTask implements Runnable {
     private Integer index;
 
     /**
+     * redis客户端
+     */
+    private JedisCluster jedisCluster;
+
+    /**
+     * 分布式配置
+     */
+    private ZkCuratorDistributedState zkCuratorDistributedState;
+
+    /**
      * 构造器
      *
-     * @param jedisCluster redis集群客户端
+     * @param jedisCluster              redis集群客户端
+     * @param zkCuratorDistributedState 状态配置
+     * @param index                     索引
      */
-    public MessageHandlerTask(JedisCluster jedisCluster, Integer index) {
+    public MessageHandlerTask(JedisCluster jedisCluster, ZkCuratorDistributedState zkCuratorDistributedState, Integer index) {
         this.jedisCluster = jedisCluster;
+        this.zkCuratorDistributedState = zkCuratorDistributedState;
         this.index = index;
     }
 
     @Override
     public void run() {
+        if (!zkCuratorDistributedState.isOpenSend()) {
+            logger.info("发送消息未开启！");
+            return;
+        }
         if (jedisCluster != null && index != null) {
             String listName = SendDataConstant.SEND_CLICK_LIST_NAME + ":" + index;
             String bakListName = String.format(SendDataConstant.BAK_LIST_PATTERN, listName);

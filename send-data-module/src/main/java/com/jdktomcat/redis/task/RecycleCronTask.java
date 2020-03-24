@@ -42,6 +42,7 @@ public class RecycleCronTask {
     @Scheduled(cron = "0/5 * * * * ?")
     public void recycle() {
         if (!zkCuratorDistributedState.isOpenRecycleTask()) {
+            logger.info("消息回收定时任务未开启！");
             return;
         }
         long startTime = System.currentTimeMillis();

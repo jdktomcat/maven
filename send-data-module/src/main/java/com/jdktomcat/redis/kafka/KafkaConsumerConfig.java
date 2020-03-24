@@ -150,6 +150,7 @@ public class KafkaConsumerConfig {
     @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         if (!zkCuratorDistributedState.isOpenCustomMessage()) {
+            logger.info("消费kafka消息未开启！");
             return;
         }
         Map<Integer, List<String>> dataMap = new HashMap<>();

@@ -36,12 +36,9 @@ public class MessageHandlerComponent {
      */
     @PostConstruct
     public void init() {
-        if (!zkCuratorDistributedState.isOpenSend()) {
-            return;
-        }
         Executor executor = Executors.newFixedThreadPool(SendDataConstant.LIST_NUM);
         for (int i = 0; i < SendDataConstant.LIST_NUM; i++) {
-            executor.execute(new MessageHandlerTask(jedisCluster, i));
+            executor.execute(new MessageHandlerTask(jedisCluster, zkCuratorDistributedState, i));
         }
     }
 }

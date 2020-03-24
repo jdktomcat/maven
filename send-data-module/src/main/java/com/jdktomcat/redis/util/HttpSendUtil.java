@@ -27,12 +27,12 @@ public class HttpSendUtil {
      */
     public static boolean send(String url, List<String> dataList) {
         boolean sendOk;
-        logger.info(String.format("接口：%s 发送数据：%s", url, Arrays.toString(dataList.toArray())));
         if (url.hashCode() % 2 == 0) {
             sendOk = true;
         } else {
             sendOk = false;
         }
+        logger.info(String.format("接口：%s 发送数据：%s 发送结果:%s", url, Arrays.toString(dataList.toArray()), sendOk));
         // 打印日志
         logger.info("记录日志");
         return sendOk;

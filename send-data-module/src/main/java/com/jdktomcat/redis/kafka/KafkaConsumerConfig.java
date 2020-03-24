@@ -73,7 +73,7 @@ public class KafkaConsumerConfig {
     /**
      * kafka一次消费信息后多长时间自动提交（ms）
      */
-    @Value("${kafka.max.auto.commit.interval:200}")
+    @Value("${kafka.max.auto.commit.interval:1000}")
     private Integer maxPollInterval;
 
 
@@ -148,10 +148,10 @@ public class KafkaConsumerConfig {
      * @param records 消息
      * @param ack     消息回执
      */
-    @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
+    @KafkaListener(topics = "send_click_topic_3", containerFactory = "batchFactory")
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
+        long startTime = System.currentTimeMillis();
         if (!zkCuratorDistributedState.isOpenCustomMessage()) {
-            logger.info("消费kafka消息未开启！");
             return;
         }
         Map<Integer, List<String>> dataMap = new HashMap<>();
@@ -172,12 +172,13 @@ public class KafkaConsumerConfig {
         for (Map.Entry<Integer, List<String>> entry : dataMap.entrySet()) {
             count += jedisCluster.lpush(SendDataConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[0]));
         }
+        ack.acknowledge();
+        logger.info(String.format("消费消息耗时：%s ms", System.currentTimeMillis() - startTime));
         logger.info(String.format("消息队列中消息总数：%d", count));
         try {
             Thread.sleep(count);
         } catch (InterruptedException e) {
             logger.error("消费kafka消息异常：" + e.getMessage());
         }
-        ack.acknowledge();
     }
 }

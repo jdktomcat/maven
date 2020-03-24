@@ -11,12 +11,12 @@ public class SendDataConstant {
     /**
      * 队列个数
      */
-    public static final int LIST_NUM = 25;
+    public static final int LIST_NUM = 5;
 
     /**
      * 队列名称前缀
      */
-    public static final String SEND_CLICK_LIST_NAME = "sent:click:data:list";
+    public static final String SEND_CLICK_LIST_NAME = "sent:click:message:0:queue";
 
     /**
      * 备份队列名称
@@ -47,4 +47,20 @@ public class SendDataConstant {
      * 消息消费开启zk节点路径
      */
     public static final String MESSAGE_CUSTOM_OPEN_FLG_NODE = "/message/custom/open/flg/node";
+
+    /**
+     * 发送最大数量
+     */
+    public static final Integer SEND_ITEM_MAX = 10;
+
+    /**
+     * 发送最大等待时长
+     */
+    public static final Long TIME_LIMIT_MAX = 1000L;
+
+    /**
+     * 发送次数阈值
+     */
+    public static final Integer SEND_COUNT_MAX = 3;
+
 }

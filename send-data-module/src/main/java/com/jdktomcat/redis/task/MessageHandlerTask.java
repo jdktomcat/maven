@@ -60,12 +60,8 @@ public class MessageHandlerTask implements Runnable {
         if (jedisCluster != null && index != null) {
             String listName = SendDataConstant.SEND_CLICK_LIST_NAME + ":" + index;
             String bakListName = String.format(SendDataConstant.BAK_LIST_PATTERN, listName);
-            Integer maxItem = 1000;
-            Long maxTimeLimit = 1000L;
-            Integer sendLimit = 3;
             while (true) {
                 if (!zkCuratorDistributedState.isOpenSend()) {
-                    logger.info("发送消息未开启！");
                     continue;
                 }
                 int handleCount = 0;
@@ -74,10 +70,10 @@ public class MessageHandlerTask implements Runnable {
                 Map<String, Integer> messageSendMap = new HashedMap<>();
                 Map<String, Boolean> messageSendStateMap = new HashedMap<>();
                 List<String> messageList = new ArrayList<>();
-                do {
-                    String message = jedisCluster.brpoplpush(listName, bakListName, 0);
-                    logger.info(String.format("源队列：%s,备份队列：%s，消息：%s", listName, bakListName, message));
+                while (handleCount < SendDataConstant.SEND_ITEM_MAX && (System.currentTimeMillis() - startTime < SendDataConstant.TIME_LIMIT_MAX)) {
+                    String message = jedisCluster.rpoplpush(listName, bakListName);
                     if (StringUtils.isNotBlank(message)) {
+                        logger.info(String.format("源队列：%s,备份队列：%s，消息：%s", listName, bakListName, message));
                         messageList.add(message);
                         String[] paramArray = message.split("||");
                         if (paramArray.length == 4) {
@@ -87,20 +83,20 @@ public class MessageHandlerTask implements Runnable {
                             List<String> dataList = dataMap.get(url);
                             if (dataList == null) {
                                 dataList = new ArrayList<>();
-                                dataMap.put(url, dataList);
                             }
                             dataList.add(infoJson);
+                            dataMap.put(url, dataList);
                             messageSendMap.put(infoJson, sendCount);
                         }
                         handleCount++;
                     }
-                } while (!(handleCount > maxItem) || (System.currentTimeMillis() - startTime > maxTimeLimit));
+                }
                 for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
                     String url = entry.getKey();
                     messageSendStateMap.put(url, HttpSendUtil.send(url, entry.getValue()));
                 }
                 for (String message : messageList) {
-                    jedisCluster.lrem(bakListName, 1, message);
+                    logger.info(String.format("删除备份队列:%s中元素：%s 删除结果：%s", bakListName, message, jedisCluster.lrem(bakListName, 1, message)));
                 }
                 List<String> failDataList = new ArrayList<>();
                 for (Map.Entry<String, Boolean> entry : messageSendStateMap.entrySet()) {
@@ -115,22 +111,21 @@ public class MessageHandlerTask implements Runnable {
                         String[] paramArray = message.split("||");
                         String url = paramArray[0];
                         String infoJson = paramArray[1];
-                        Integer sendCount = Integer.parseInt(paramArray[2]);
-                        if (sendCount + 1 > sendLimit) {
+                        Integer sendCount = Integer.parseInt(paramArray[3]);
+                        if (sendCount + 1 > SendDataConstant.SEND_COUNT_MAX) {
                             wasteDataList.add(message);
                         } else {
                             recycleDataList.add(String.format("%s||%s||%s||%s", url, infoJson, System.currentTimeMillis(), (sendCount + 1)));
                         }
                     }
                     if (CollectionUtils.isNotEmpty(recycleDataList)) {
-                        String[] memberArray = new String[recycleDataList.size()];
-                        recycleDataList.toArray(memberArray);
+                        String[] memberArray = recycleDataList.toArray(new String[0]);
                         // 重发
-                        jedisCluster.lpush(listName, memberArray);
+                        logger.info(String.format("需要重新发送数据，队列名称：%s 元素：%s 队列长度：%s", listName, Arrays.toString(memberArray), jedisCluster.lpush(listName, memberArray)));
                     }
                     if (CollectionUtils.isNotEmpty(wasteDataList)) {
                         // 回收
-                        logger.info(String.format("保存到数据库:%s", Arrays.toString(wasteDataList.toArray(new String[0]))));
+                        logger.info(String.format("保存到数据库元素:%s", Arrays.toString(wasteDataList.toArray(new String[0]))));
                     }
                 }
             }

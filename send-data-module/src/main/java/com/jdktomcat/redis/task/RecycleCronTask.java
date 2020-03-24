@@ -4,6 +4,7 @@ import com.jdktomcat.redis.constant.RedisConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
@@ -27,6 +28,12 @@ public class RecycleCronTask {
     private static final Logger logger = Logger.getLogger(RecycleCronTask.class);
 
     /**
+     *
+     */
+    @Value("${message.back.list.recycle.task.open:true}")
+    private boolean openTaskFlg;
+
+    /**
      * redis客户端
      */
     @Autowired
@@ -34,6 +41,9 @@ public class RecycleCronTask {
 
     @Scheduled(cron = "0/5 * * * * ?")
     public void recycle() {
+        if (!openTaskFlg) {
+            return;
+        }
         long startTime = System.currentTimeMillis();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss SSS");
         logger.info("定时回收任务开始：" + simpleDateFormat.format(new Date()));

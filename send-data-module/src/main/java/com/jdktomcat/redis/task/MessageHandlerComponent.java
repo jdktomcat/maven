@@ -2,6 +2,7 @@ package com.jdktomcat.redis.task;
 
 import com.jdktomcat.redis.constant.RedisConstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
 
@@ -25,13 +26,21 @@ public class MessageHandlerComponent {
     private JedisCluster jedisCluster;
 
     /**
+     * 消费消息开启标识
+     */
+    @Value("${message.send.open.flg:true}")
+    private boolean openSendFlg;
+
+    /**
      * 初始化
      */
     @PostConstruct
     public void init() {
-        Executor executor = Executors.newFixedThreadPool(RedisConstant.LIST_NUM);
-        for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
-            executor.execute(new MessageHandlerTask(jedisCluster, i));
+        if (!openSendFlg) {
+            Executor executor = Executors.newFixedThreadPool(RedisConstant.LIST_NUM);
+            for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
+                executor.execute(new MessageHandlerTask(jedisCluster, i));
+            }
         }
     }
 }

@@ -84,7 +84,7 @@ public class SpringKafkaProducerConfig {
      */
     public void send(String message) {
         logger.info("发送消息：" + message);
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("send_click_topic", message);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send("send_click_topic_5", message);
         future.addCallback(result -> {
             logger.info("发送成功：" + result.toString());
         }, ex -> {
@@ -97,13 +97,11 @@ public class SpringKafkaProducerConfig {
      */
     @PostConstruct
     public void init() {
-        Executor executor = Executors.newFixedThreadPool(5);
-        for (int i = 0; i < 5; i++) {
-            executor.execute(() -> {
-                while (true) {
-                    send(RandomStringUtils.randomAlphabetic(20));
-                }
-            });
-        }
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            for (int index = 0; index < 100; index++) {
+                send("send-click-message-data-" + index);
+            }
+        });
     }
 }

@@ -16,7 +16,7 @@ public class SendDataConstant {
     /**
      * 队列名称前缀
      */
-    public static final String SEND_CLICK_LIST_NAME = "sent:click:message:0:queue";
+    public static final String SEND_CLICK_LIST_NAME = "sent:click:message:2:queue";
 
     /**
      * 备份队列名称

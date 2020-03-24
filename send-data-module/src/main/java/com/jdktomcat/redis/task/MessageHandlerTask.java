@@ -60,6 +60,7 @@ public class MessageHandlerTask implements Runnable {
         if (jedisCluster != null && index != null) {
             String listName = SendDataConstant.SEND_CLICK_LIST_NAME + ":" + index;
             String bakListName = String.format(SendDataConstant.BAK_LIST_PATTERN, listName);
+
             while (true) {
                 if (!zkCuratorDistributedState.isOpenSend()) {
                     continue;
@@ -91,6 +92,7 @@ public class MessageHandlerTask implements Runnable {
                         handleCount++;
                     }
                 }
+
                 for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
                     String url = entry.getKey();
                     messageSendStateMap.put(url, HttpSendUtil.send(url, entry.getValue()));

@@ -87,6 +87,7 @@ public class ZkCuratorDistributedState {
             NodeCacheListener sendOpenFlgNodeCacheListener = () -> {
                 ChildData childData = sendOpenFlgNodeCache.getCurrentData();
                 logger.info(String.format("ZNode消息发送节点状态改变,path=%s,data=%s,stat=%s", childData.getPath(), new String(childData.getData(), "Utf-8"), childData.getStat()));
+                sendOpenFlg = "true".equalsIgnoreCase(new String(childData.getData()));
             };
             sendOpenFlgNodeCache.getListenable().addListener(sendOpenFlgNodeCacheListener);
             sendOpenFlgNodeCache.start();
@@ -100,6 +101,7 @@ public class ZkCuratorDistributedState {
             NodeCacheListener recycleTaskOpenFlgNodeCacheListener = () -> {
                 ChildData childData = recycleTaskOpenFlgNodeCache.getCurrentData();
                 logger.info(String.format("ZNode消息回收定时任务节点状态改变,path=%s,data=%s,stat=%s", childData.getPath(), new String(childData.getData(), "Utf-8"), childData.getStat()));
+                recycleTaskOpenFlg = "true".equalsIgnoreCase(new String(childData.getData()));
             };
             recycleTaskOpenFlgNodeCache.getListenable().addListener(recycleTaskOpenFlgNodeCacheListener);
             recycleTaskOpenFlgNodeCache.start();
@@ -113,6 +115,7 @@ public class ZkCuratorDistributedState {
             NodeCacheListener customMessageOpenFlgNodeCacheListener = () -> {
                 ChildData childData = customMessageOpenFlgNodeCache.getCurrentData();
                 logger.info(String.format("ZNode消息消费节点状态改变,path=%s,data=%s,stat=%s", childData.getPath(), new String(childData.getData(), "Utf-8"), childData.getStat()));
+                customMessageOpenFlg = "true".equalsIgnoreCase(new String(childData.getData()));
             };
             customMessageOpenFlgNodeCache.getListenable().addListener(customMessageOpenFlgNodeCacheListener);
             customMessageOpenFlgNodeCache.start();

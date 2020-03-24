@@ -1,6 +1,6 @@
 package com.jdktomcat.redis.task;
 
-import com.jdktomcat.redis.constant.RedisConstant;
+import com.jdktomcat.redis.constant.SendDataConstant;
 import com.jdktomcat.redis.util.HttpSendUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
@@ -42,8 +42,8 @@ public class MessageHandlerTask implements Runnable {
     @Override
     public void run() {
         if (jedisCluster != null && index != null) {
-            String listName = RedisConstant.SEND_CLICK_LIST_NAME + ":" + index;
-            String bakListName = String.format(RedisConstant.BAK_LIST_PATTERN, listName);
+            String listName = SendDataConstant.SEND_CLICK_LIST_NAME + ":" + index;
+            String bakListName = String.format(SendDataConstant.BAK_LIST_PATTERN, listName);
             Integer maxItem = 1000;
             Long maxTimeLimit = 1000L;
             Integer sendLimit = 3;

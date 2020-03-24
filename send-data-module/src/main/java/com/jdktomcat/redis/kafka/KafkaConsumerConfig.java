@@ -1,6 +1,7 @@
 package com.jdktomcat.redis.kafka;
 
-import com.jdktomcat.redis.constant.RedisConstant;
+import com.jdktomcat.redis.constant.SendDataConstant;
+import com.jdktomcat.redis.zk.ZkCuratorDistributedState;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -87,6 +88,12 @@ public class KafkaConsumerConfig {
     @Value("${kafka.customer.poll.concurrency:6}")
     private Integer concurrency;
 
+    /**
+     * 分布式配置
+     */
+    @Autowired
+    private ZkCuratorDistributedState zkCuratorDistributedState;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -142,6 +149,9 @@ public class KafkaConsumerConfig {
      */
     @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
+        if (!zkCuratorDistributedState.isOpenCustomMessage()) {
+            return;
+        }
         Map<Integer, List<String>> dataMap = new HashMap<>();
         for (ConsumerRecord<String, String> record : records) {
             logger.info(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));
@@ -158,8 +168,9 @@ public class KafkaConsumerConfig {
         }
         Long count = 0L;
         for (Map.Entry<Integer, List<String>> entry : dataMap.entrySet()) {
-            count += jedisCluster.lpush(RedisConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
+            count += jedisCluster.lpush(SendDataConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[0]));
         }
+        logger.info(String.format("消息队列中消息总数：%d", count));
         try {
             Thread.sleep(count);
         } catch (InterruptedException e) {

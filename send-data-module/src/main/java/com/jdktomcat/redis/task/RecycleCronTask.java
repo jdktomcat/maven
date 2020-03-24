@@ -1,10 +1,10 @@
 package com.jdktomcat.redis.task;
 
-import com.jdktomcat.redis.constant.RedisConstant;
+import com.jdktomcat.redis.constant.SendDataConstant;
+import com.jdktomcat.redis.zk.ZkCuratorDistributedState;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
@@ -28,20 +28,20 @@ public class RecycleCronTask {
     private static final Logger logger = Logger.getLogger(RecycleCronTask.class);
 
     /**
-     *
-     */
-    @Value("${message.back.list.recycle.task.open:true}")
-    private boolean openTaskFlg;
-
-    /**
      * redis客户端
      */
     @Autowired
     private JedisCluster jedisCluster;
 
+    /**
+     * 分布式配置
+     */
+    @Autowired
+    private ZkCuratorDistributedState zkCuratorDistributedState;
+
     @Scheduled(cron = "0/5 * * * * ?")
     public void recycle() {
-        if (!openTaskFlg) {
+        if (!zkCuratorDistributedState.isOpenRecycleTask()) {
             return;
         }
         long startTime = System.currentTimeMillis();
@@ -49,10 +49,10 @@ public class RecycleCronTask {
         logger.info("定时回收任务开始：" + simpleDateFormat.format(new Date()));
         long maxExistTime = 1000L;
         int handleCount = 25;
-        for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
+        for (int i = 0; i < SendDataConstant.LIST_NUM; i++) {
             if (acquireLock(i)) {
-                String listName = RedisConstant.SEND_CLICK_LIST_NAME + ":" + i;
-                String bakListName = String.format(RedisConstant.BAK_LIST_PATTERN, listName);
+                String listName = SendDataConstant.SEND_CLICK_LIST_NAME + ":" + i;
+                String bakListName = String.format(SendDataConstant.BAK_LIST_PATTERN, listName);
                 long size = jedisCluster.llen(bakListName);
                 logger.info(String.format("队列：%s 备份队列：%s 长度：%d", listName, bakListName, size));
                 ArrayList<String> recycleList = new ArrayList<>();
@@ -85,7 +85,7 @@ public class RecycleCronTask {
      * @return 成功：true 失败：false
      */
     private boolean acquireLock(Integer index) {
-        return "ok".equalsIgnoreCase(jedisCluster.set(RedisConstant.RECYCLE_BAK_LIST_MUTEX + index, "1", "NX", "ex", 10000));
+        return "ok".equalsIgnoreCase(jedisCluster.set(SendDataConstant.RECYCLE_BAK_LIST_MUTEX + index, "1", "NX", "ex", 10000));
     }
 
     /**
@@ -94,6 +94,6 @@ public class RecycleCronTask {
      * @param index 索引
      */
     private void releaseLock(Integer index) {
-        jedisCluster.del(RedisConstant.RECYCLE_BAK_LIST_MUTEX + index);
+        jedisCluster.del(SendDataConstant.RECYCLE_BAK_LIST_MUTEX + index);
     }
 }

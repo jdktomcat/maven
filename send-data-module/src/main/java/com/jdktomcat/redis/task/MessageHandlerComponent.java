@@ -1,8 +1,8 @@
 package com.jdktomcat.redis.task;
 
-import com.jdktomcat.redis.constant.RedisConstant;
+import com.jdktomcat.redis.constant.SendDataConstant;
+import com.jdktomcat.redis.zk.ZkCuratorDistributedState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisCluster;
 
@@ -26,21 +26,21 @@ public class MessageHandlerComponent {
     private JedisCluster jedisCluster;
 
     /**
-     * 消费消息开启标识
+     * 分布式配置
      */
-    @Value("${message.send.open.flg:true}")
-    private boolean openSendFlg;
+    @Autowired
+    private ZkCuratorDistributedState zkCuratorDistributedState;
 
     /**
      * 初始化
      */
     @PostConstruct
     public void init() {
-        if (!openSendFlg) {
+        if (!zkCuratorDistributedState.isOpenSend()) {
             return;
         }
-        Executor executor = Executors.newFixedThreadPool(RedisConstant.LIST_NUM);
-        for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
+        Executor executor = Executors.newFixedThreadPool(SendDataConstant.LIST_NUM);
+        for (int i = 0; i < SendDataConstant.LIST_NUM; i++) {
             executor.execute(new MessageHandlerTask(jedisCluster, i));
         }
     }

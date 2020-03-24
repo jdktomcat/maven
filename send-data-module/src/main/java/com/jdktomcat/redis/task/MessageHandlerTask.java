@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import redis.clients.jedis.JedisCluster;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -128,7 +129,7 @@ public class MessageHandlerTask implements Runnable {
                     }
                     if (CollectionUtils.isNotEmpty(wasteDataList)) {
                         // 回收
-                        System.out.println("保存到数据库！");
+                        logger.info(String.format("保存到数据库:%s", Arrays.toString(wasteDataList.toArray(new String[0]))));
                     }
                 }
             }

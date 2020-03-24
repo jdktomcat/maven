@@ -1,5 +1,7 @@
 package com.jdktomcat.redis.util;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,6 +14,11 @@ import java.util.List;
 public class HttpSendUtil {
 
     /**
+     * 日志
+     */
+    private static Logger logger = Logger.getLogger(HttpSendUtil.class);
+
+    /**
      * 发送信息
      *
      * @param url      第三方接口路径
@@ -20,14 +27,14 @@ public class HttpSendUtil {
      */
     public static boolean send(String url, List<String> dataList) {
         boolean sendOk;
-        System.out.println(String.format("接口：%s 发送数据：%s", url, Arrays.toString(dataList.toArray())));
+        logger.info(String.format("接口：%s 发送数据：%s", url, Arrays.toString(dataList.toArray())));
         if (url.hashCode() % 2 == 0) {
             sendOk = true;
         } else {
             sendOk = false;
         }
         // 打印日志
-        System.out.println("记录日志");
+        logger.info("记录日志");
         return sendOk;
     }
 }

@@ -55,6 +55,12 @@ public class SpringKafkaConsumerConfig {
     @Value("${kafka.max.poll.record:10}")
     private Integer maxPollRecord;
 
+    /**
+     * 并行处理线程数
+     */
+    @Value("${kafka.customer.poll.concurrency:6}")
+    private Integer concurrency;
+
     @Bean
     public Map<String, Object> consumerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -84,11 +90,12 @@ public class SpringKafkaConsumerConfig {
     public KafkaListenerContainerFactory<?> batchFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
-        factory.setConcurrency(5);
+        // 并行多线程数
+        factory.setConcurrency(concurrency);
         //设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG
         factory.setBatchListener(true);
         //设置提交偏移量的方式
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         //设置每个分区
         factory.getContainerProperties().setSubBatchPerPartition(true);
         return factory;

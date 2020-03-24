@@ -37,10 +37,11 @@ public class MessageHandlerComponent {
     @PostConstruct
     public void init() {
         if (!openSendFlg) {
-            Executor executor = Executors.newFixedThreadPool(RedisConstant.LIST_NUM);
-            for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
-                executor.execute(new MessageHandlerTask(jedisCluster, i));
-            }
+            return;
+        }
+        Executor executor = Executors.newFixedThreadPool(RedisConstant.LIST_NUM);
+        for (int i = 0; i < RedisConstant.LIST_NUM; i++) {
+            executor.execute(new MessageHandlerTask(jedisCluster, i));
         }
     }
 }

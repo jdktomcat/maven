@@ -56,10 +56,6 @@ public class MessageHandlerTask implements Runnable {
 
     @Override
     public void run() {
-        if (!zkCuratorDistributedState.isOpenSend()) {
-            logger.info("发送消息未开启！");
-            return;
-        }
         if (jedisCluster != null && index != null) {
             String listName = SendDataConstant.SEND_CLICK_LIST_NAME + ":" + index;
             String bakListName = String.format(SendDataConstant.BAK_LIST_PATTERN, listName);
@@ -67,6 +63,10 @@ public class MessageHandlerTask implements Runnable {
             Long maxTimeLimit = 1000L;
             Integer sendLimit = 3;
             while (true) {
+                if (!zkCuratorDistributedState.isOpenSend()) {
+                    logger.info("发送消息未开启！");
+                    return;
+                }
                 int handleCount = 0;
                 Long startTime = System.currentTimeMillis();
                 Map<String, List<String>> dataMap = new HashedMap<>();

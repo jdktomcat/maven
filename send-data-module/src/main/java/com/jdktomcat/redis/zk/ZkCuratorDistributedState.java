@@ -81,7 +81,7 @@ public class ZkCuratorDistributedState {
             //检查节点是否存在，没有则创建
             boolean isSendNodeExist = curatorFramework.checkExists().forPath(SendDataConstant.MESSAGE_SEND_DATA_OPEN_FLG_NODE) != null;
             if (!isSendNodeExist) {
-                curatorFramework.create().forPath(SendDataConstant.MESSAGE_SEND_DATA_OPEN_FLG_NODE, "false".getBytes());
+                curatorFramework.create().creatingParentsIfNeeded().forPath(SendDataConstant.MESSAGE_SEND_DATA_OPEN_FLG_NODE, "false".getBytes());
             }
             NodeCache sendOpenFlgNodeCache = new NodeCache(curatorFramework, SendDataConstant.MESSAGE_SEND_DATA_OPEN_FLG_NODE, false);
             NodeCacheListener sendOpenFlgNodeCacheListener = () -> {
@@ -94,7 +94,7 @@ public class ZkCuratorDistributedState {
             //检查节点是否存在，没有则创建
             boolean isRecycleTaskNodeExist = curatorFramework.checkExists().forPath(SendDataConstant.MESSAGE_RECYCLE_TASK_OPEN_FLG_NODE) != null;
             if (!isRecycleTaskNodeExist) {
-                curatorFramework.create().forPath(SendDataConstant.MESSAGE_RECYCLE_TASK_OPEN_FLG_NODE, "false".getBytes());
+                curatorFramework.create().creatingParentsIfNeeded().forPath(SendDataConstant.MESSAGE_RECYCLE_TASK_OPEN_FLG_NODE, "false".getBytes());
             }
             NodeCache recycleTaskOpenFlgNodeCache = new NodeCache(curatorFramework, SendDataConstant.MESSAGE_RECYCLE_TASK_OPEN_FLG_NODE, false);
             NodeCacheListener recycleTaskOpenFlgNodeCacheListener = () -> {
@@ -107,7 +107,7 @@ public class ZkCuratorDistributedState {
             //检查节点是否存在，没有则创建
             boolean isCustomMessageNodeExist = curatorFramework.checkExists().forPath(SendDataConstant.MESSAGE_CUSTOM_OPEN_FLG_NODE) != null;
             if (!isCustomMessageNodeExist) {
-                curatorFramework.create().forPath(SendDataConstant.MESSAGE_CUSTOM_OPEN_FLG_NODE, "false".getBytes());
+                curatorFramework.create().creatingParentsIfNeeded().forPath(SendDataConstant.MESSAGE_CUSTOM_OPEN_FLG_NODE, "false".getBytes());
             }
             NodeCache customMessageOpenFlgNodeCache = new NodeCache(curatorFramework, SendDataConstant.MESSAGE_CUSTOM_OPEN_FLG_NODE, false);
             NodeCacheListener customMessageOpenFlgNodeCacheListener = () -> {

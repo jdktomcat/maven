@@ -1,11 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>     
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration>
-	<appender name="CONSOLE-APPENDER" class="org.apache.log4j.ConsoleAppender">
+    <appender name="CONSOLE-APPENDER" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%X{traceId}/%c{1}] - %m%n"/>
         </layout>
     </appender>
+
+    <!-- 消费kafka消息日志 -->
+    <appender name="custom" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="send-data-module/log/custom.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%X{traceId}/%c{1}] - %m%n"/>
+        </layout>
+    </appender>
+    <!-- 发送消息日志 -->
+    <appender name="send" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="send-data-module/log/send.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%X{traceId}/%c{1}] - %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- 回收消息日志 -->
+    <appender name="recycle" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="File" value="send-data-module/log/recycle.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%X{traceId}/%c{1}] - %m%n"/>
+        </layout>
+    </appender>
+
+    <logger name="custom">
+        <level value="info"/>
+        <appender-ref ref="custom"/>
+    </logger>
+    <logger name="send">
+        <level value="info"/>
+        <appender-ref ref="send"/>
+    </logger>
+    <logger name="recycle">
+        <level value="info"/>
+        <appender-ref ref="recycle"/>
+    </logger>
     <root>
         <priority value="INFO"/>
         <appender-ref ref="CONSOLE-APPENDER"/>

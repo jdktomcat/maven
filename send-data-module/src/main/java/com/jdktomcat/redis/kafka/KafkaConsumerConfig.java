@@ -40,10 +40,11 @@ import java.util.Map;
 @EnableKafka
 @Configuration
 public class KafkaConsumerConfig {
+
     /**
      * 日志
      */
-    private static final Logger logger = Logger.getLogger(KafkaConsumerConfig.class);
+    private static final Logger logger = Logger.getLogger("custom");
 
     /**
      * redis客户端

@@ -25,7 +25,7 @@ public class RecycleCronTask {
     /**
      * 日志
      */
-    private static final Logger logger = Logger.getLogger(RecycleCronTask.class);
+    private static final Logger logger = Logger.getLogger("recycle");
 
     /**
      * redis客户端

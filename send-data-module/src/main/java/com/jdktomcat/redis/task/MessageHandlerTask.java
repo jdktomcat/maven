@@ -25,7 +25,7 @@ public class MessageHandlerTask implements Runnable {
     /**
      * 日志
      */
-    private static Logger logger = Logger.getLogger(MessageHandlerTask.class);
+    private static Logger logger = Logger.getLogger("send");
 
     /**
      * 索引

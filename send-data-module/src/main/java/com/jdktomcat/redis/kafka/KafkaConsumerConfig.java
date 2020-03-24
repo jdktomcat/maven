@@ -4,20 +4,30 @@ import com.jdktomcat.redis.constant.RedisConstant;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.config.KafkaStreamsConfiguration;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.support.Acknowledgment;
 import redis.clients.jedis.JedisCluster;
 
-import javax.annotation.PostConstruct;
-import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 类描述：kafka配置
@@ -26,7 +36,8 @@ import java.util.concurrent.Executors;
  * @date 2020-03-2020/3/18 15:33
  */
 @Data
-@Component
+@EnableKafka
+@Configuration
 public class KafkaConsumerConfig {
     /**
      * 日志
@@ -34,121 +45,126 @@ public class KafkaConsumerConfig {
     private static final Logger logger = Logger.getLogger(KafkaConsumerConfig.class);
 
     /**
-     * zookeeper地址配置
-     */
-    @Value("${kafka.server.address}")
-    private String kafkaServer;
-
-    /**
-     * 主题
-     */
-    @Value("${kafka.send.click.topic:send_click_topic}")
-    private String topic;
-
-    /**
-     * 消费组标识
-     */
-    @Value("${kafka.customer.group.id:ads_marketing}")
-    private String groupId;
-
-    /**
-     * 客户端标识
-     */
-    @Value("${kafka.customer.client.id:ads_marketing}")
-    private String clientId;
-
-    /**
-     * zk会话超时时长
-     */
-    @Value("${kafka.zookeeper.session.timeout:40000}")
-    private Long zkSessionTimeout;
-
-    /**
-     * zk同步时间
-     */
-    @Value("${kafka.zookeeper.sync.time:200}")
-    private Long zkSyncTime;
-
-    /**
-     * 自动提交间隔
-     */
-    @Value("${kafka.auto.commit.interval:1000}")
-    private Integer autoCommitInterval;
-
-    /**
-     * 一次获取条数
-     */
-    @Value("${kafka.max.poll.records:200}")
-    private Integer maxPollRecords;
-
-
-    /**
      * redis客户端
      */
     @Autowired
     private JedisCluster jedisCluster;
 
+    /**
+     * 消费组
+     */
+    @Value("${kafka.customer.group.id:ads_marketing}")
+    private String groupIdConfig;
 
     /**
-     * 获取配置信息
-     *
-     * @return 配置
+     * 重置
      */
-    private Properties getConfigProperties() {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", kafkaServer);
-        props.put("group.id", groupId);
-        props.put("client.id", clientId);
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("enable.auto.commit", "false");
-        props.put("max.poll.records", maxPollRecords);
-        logger.info(String.format("kafka消费者配置信息：%s", props.toString()));
+    @Value("${kafka.auto.offset.reset.config:earliest}")
+    private String autoOffsetReset;
+
+    /**
+     * kafka服务器配置
+     */
+    @Value("${kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
+    /**
+     * kafka一次消费信息后多长时间自动提交（ms）
+     */
+    @Value("${kafka.max.auto.commit.interval:200}")
+    private Integer maxPollInterval;
+
+
+    /**
+     * kafka一次消费多少条数据
+     */
+    @Value("${kafka.max.poll.record:10}")
+    private Integer maxPollRecord;
+
+    /**
+     * 并行处理线程数
+     */
+    @Value("${kafka.customer.poll.concurrency:6}")
+    private Integer concurrency;
+
+    @Bean
+    public Map<String, Object> consumerConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffsetReset);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollInterval);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecord);
         return props;
     }
 
+    @Bean
+    public ConsumerFactory<String, String> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<?> batchFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        // 并行多线程数
+        factory.setConcurrency(concurrency);
+        //设置为批量消费，每个批次数量在Kafka配置参数中设置ConsumerConfig.MAX_POLL_RECORDS_CONFIG
+        factory.setBatchListener(true);
+        //设置提交偏移量的方式
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+        //设置每个分区
+        factory.getContainerProperties().setSubBatchPerPartition(true);
+        return factory;
+    }
+
+    @Bean
+    public KafkaStreamsConfiguration defaultKafkaStreamsConfig() {
+        Map<String, Object> dataMap = consumerConfigs();
+        dataMap.put("application.id", "ads");
+        return new KafkaStreamsConfiguration(dataMap);
+    }
+
     /**
-     * 初始化
+     * kafka主题监控监听器回调函数
+     *
+     * @param records 消息
+     * @param ack     消息回执
      */
-    @PostConstruct
-    public void init() {
-        Properties props = this.getConfigProperties();
-        Executor executor = Executors.newFixedThreadPool(5);
-        for (int i = 0; i < 5; i++) {
-            executor.execute(() -> {
-                KafkaConsumer<String, Object> kafkaConsumer = new KafkaConsumer<>(props);
-                kafkaConsumer.subscribe(Arrays.asList(topic));
-                while (true) {
-                    ConsumerRecords<String, Object> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(100L));
-                    if (!consumerRecords.isEmpty()) {
-                        Iterator<ConsumerRecord<String, Object>> iterator = consumerRecords.iterator();
-                        Map<Integer, List<String>> dataMap = new HashMap<>();
-                        while (iterator.hasNext()) {
-                            ConsumerRecord consumerRecord = iterator.next();
-                            String url = RandomStringUtils.randomAlphabetic(20);
-                            Integer queueIndex = Math.abs(url.hashCode() % 24);
-                            String message = consumerRecord.value().toString();
-                            String member = String.format("%s||%s||%s||%s", url, message, System.currentTimeMillis(), 0);
-                            List<String> dataList = dataMap.get(queueIndex);
-                            if (CollectionUtils.isEmpty(dataList)) {
-                                dataList = new ArrayList<>();
-                                dataMap.put(queueIndex, dataList);
-                            }
-                            dataList.add(member);
-                            logger.info(String.format("partition:%s,offset:%s,消息键：%s，消息值：%s", consumerRecord.partition(), consumerRecord.offset(), consumerRecord.key(), consumerRecord.value()));
-                        }
-                        Long count = 0L;
-                        for (Map.Entry<Integer, List<String>> entry : dataMap.entrySet()) {
-                            count += jedisCluster.lpush(RedisConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
-                        }
-                        try {
-                            Thread.sleep(count);
-                        } catch (InterruptedException e) {
-                            logger.error("消费kafka消息异常：" + e.getMessage());
-                        }
-                    }
-                }
-            });
+    @KafkaListener(topics = "send_click_topic", containerFactory = "batchFactory")
+    public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
+        Map<Integer, List<String>> dataMap = new HashMap<>();
+        for (ConsumerRecord<String, String> record : records) {
+            logger.info(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));
+            String url = RandomStringUtils.randomAlphabetic(20);
+            Integer queueIndex = Math.abs(url.hashCode() % 24);
+            String message = record.value();
+            String member = String.format("%s||%s||%s||%s", url, message, System.currentTimeMillis(), 0);
+            List<String> dataList = dataMap.get(queueIndex);
+            if (CollectionUtils.isEmpty(dataList)) {
+                dataList = new ArrayList<>();
+                dataMap.put(queueIndex, dataList);
+            }
+            dataList.add(member);
         }
+        Long count = 0L;
+        for (Map.Entry<Integer, List<String>> entry : dataMap.entrySet()) {
+            count += jedisCluster.lpush(RedisConstant.SEND_CLICK_LIST_NAME + ":" + entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
+        }
+        try {
+            Thread.sleep(count);
+        } catch (InterruptedException e) {
+            logger.error("消费kafka消息异常：" + e.getMessage());
+        }
+        ack.acknowledge();
     }
 }

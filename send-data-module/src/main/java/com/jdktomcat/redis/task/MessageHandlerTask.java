@@ -76,6 +76,7 @@ public class MessageHandlerTask implements Runnable {
                 List<String> messageList = new ArrayList<>();
                 do {
                     String message = jedisCluster.brpoplpush(listName, bakListName, 0);
+                    logger.info(String.format("源队列：%s,备份队列：%s，消息：%s", listName, bakListName, message));
                     if (StringUtils.isNotBlank(message)) {
                         messageList.add(message);
                         String[] paramArray = message.split("||");

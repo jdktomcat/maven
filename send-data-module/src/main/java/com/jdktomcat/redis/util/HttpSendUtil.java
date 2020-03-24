@@ -16,7 +16,7 @@ public class HttpSendUtil {
     /**
      * 日志
      */
-    private static Logger logger = Logger.getLogger(HttpSendUtil.class);
+    private static Logger logger = Logger.getLogger("send");
 
     /**
      * 发送信息

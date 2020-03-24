@@ -65,7 +65,7 @@ public class MessageHandlerTask implements Runnable {
             while (true) {
                 if (!zkCuratorDistributedState.isOpenSend()) {
                     logger.info("发送消息未开启！");
-                    return;
+                    continue;
                 }
                 int handleCount = 0;
                 Long startTime = System.currentTimeMillis();

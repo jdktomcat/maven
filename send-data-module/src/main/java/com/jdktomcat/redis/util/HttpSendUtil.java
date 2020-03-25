@@ -25,13 +25,8 @@ public class HttpSendUtil {
      * @param dataList 点击数据
      * @return 成功：true 失败：false
      */
-    public static boolean send(String url, List<String> dataList) {
-        boolean sendOk;
-        if (url.hashCode() % 2 == 0) {
-            sendOk = true;
-        } else {
-            sendOk = false;
-        }
+    public static Boolean send(String url, List<String> dataList) {
+        boolean sendOk = Math.abs(url.hashCode()) % 2 == 0;
         logger.info(String.format("接口：%s 发送数据：%s 发送结果:%s 记录日志", url, Arrays.toString(dataList.toArray()), sendOk));
         return sendOk;
     }

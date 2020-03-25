@@ -75,7 +75,7 @@ public class MessageHandlerTask implements Runnable {
                     if (StringUtils.isNotBlank(message)) {
                         logger.info(String.format("源队列：%s,备份队列：%s，消息：%s", listName, bakListName, message));
                         messageList.add(message);
-                        String[] paramArray = message.split("||");
+                        String[] paramArray = message.split("\\|\\|");
                         if (paramArray.length == 4) {
                             String url = paramArray[0];
                             String infoJson = paramArray[1];
@@ -108,7 +108,7 @@ public class MessageHandlerTask implements Runnable {
                     List<String> wasteDataList = new ArrayList<>();
                     List<String> recycleDataList = new ArrayList<>();
                     for (String message : failDataList) {
-                        String[] paramArray = message.split("||");
+                        String[] paramArray = message.split("\\|\\|");
                         String url = paramArray[0];
                         String infoJson = paramArray[1];
                         Integer sendCount = Integer.parseInt(paramArray[3]);

@@ -58,7 +58,7 @@ public class RecycleCronTask {
                 ArrayList<String> recycleList = new ArrayList<>();
                 for (long index = 1L; index <= handleCount; index++) {
                     String member = jedisCluster.lindex(bakListName, -index);
-                    String[] paramArray = member.split("||");
+                    String[] paramArray = member.split("\\|\\|");
                     if (paramArray.length == 4) {
                         long createTime = Long.parseLong(paramArray[2]);
                         if (System.currentTimeMillis() - createTime >= maxExistTime) {

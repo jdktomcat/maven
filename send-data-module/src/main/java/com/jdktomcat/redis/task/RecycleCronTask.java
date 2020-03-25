@@ -70,7 +70,7 @@ public class RecycleCronTask {
                     }
                 }
                 if (CollectionUtils.isNotEmpty(recycleList)) {
-                    jedisCluster.rpush(listName, recycleList.toArray(new String[recycleList.size()]));
+                    jedisCluster.rpush(listName, recycleList.toArray(new String[0]));
                 }
                 releaseLock(i);
             }

@@ -148,7 +148,7 @@ public class KafkaConsumerConfig {
      * @param records 消息
      * @param ack     消息回执
      */
-    @KafkaListener(topics = "send_click_topic_5", containerFactory = "batchFactory")
+    @KafkaListener(topics = "send_click_topic_13", containerFactory = "batchFactory")
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         long startTime = System.currentTimeMillis();
         if (!zkCuratorDistributedState.isOpenCustomMessage()) {
@@ -158,7 +158,7 @@ public class KafkaConsumerConfig {
         for (ConsumerRecord<String, String> record : records) {
             logger.info(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));
             String url = RandomStringUtils.randomAlphabetic(20);
-            Integer queueIndex = Math.abs(url.hashCode() % (SendDataConstant.LIST_NUM - 1));
+            Integer queueIndex = Math.abs(url.hashCode() % SendDataConstant.LIST_NUM);
             String message = record.value();
             String member = String.format("%s||%s||%s||%s", url, message, System.currentTimeMillis(), 0);
             List<String> dataList = dataMap.get(queueIndex);

@@ -67,8 +67,11 @@ public class MessageHandlerTask implements Runnable {
                 }
                 int handleCount = 0;
                 Long startTime = System.currentTimeMillis();
-                Map<String, List<String>> dataMap = new HashedMap<>();
-                Map<String, Integer> messageSendMap = new HashedMap<>();
+                // 队列元素信息聚合
+                Map<String, List<String>> sourceDataMap = new HashedMap<>();
+                // 发送数据数据聚合
+                Map<String, List<String>> sendDataMap = new HashedMap<>();
+                // 发送消息列表
                 List<String> messageList = new ArrayList<>();
                 while (handleCount < SendDataConstant.SEND_ITEM_MAX && (System.currentTimeMillis() - startTime < SendDataConstant.TIME_LIMIT_MAX)) {
                     String message = jedisCluster.rpoplpush(listName, bakListName);
@@ -79,20 +82,24 @@ public class MessageHandlerTask implements Runnable {
                         if (paramArray.length == 4) {
                             String url = paramArray[0];
                             String infoJson = paramArray[1];
-                            Integer sendCount = Integer.parseInt(paramArray[3]);
-                            List<String> dataList = dataMap.get(url);
-                            if (dataList == null) {
-                                dataList = new ArrayList<>();
+                            List<String> sourceDataList = sourceDataMap.get(url);
+                            if (sourceDataList == null) {
+                                sourceDataList = new ArrayList<>();
                             }
-                            dataList.add(infoJson);
-                            dataMap.put(url, dataList);
-                            messageSendMap.put(infoJson, sendCount);
+                            sourceDataList.add(message);
+                            sourceDataMap.put(url, sourceDataList);
+                            List<String> sendDataList = sendDataMap.get(url);
+                            if (sendDataList == null) {
+                                sendDataList = new ArrayList<>();
+                            }
+                            sendDataList.add(infoJson);
+                            sendDataMap.put(url, sendDataList);
                         }
                         handleCount++;
                     }
                 }
                 Map<String, Boolean> messageSendStateMap = new HashedMap<>();
-                for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+                for (Map.Entry<String, List<String>> entry : sendDataMap.entrySet()) {
                     messageSendStateMap.put(entry.getKey(), HttpSendUtil.send(entry.getKey(), entry.getValue()));
                 }
                 for (String message : messageList) {
@@ -101,9 +108,11 @@ public class MessageHandlerTask implements Runnable {
                 List<String> failDataList = new ArrayList<>();
                 for (Map.Entry<String, Boolean> entry : messageSendStateMap.entrySet()) {
                     if (!entry.getValue()) {
-                        failDataList.addAll(dataMap.get(entry.getKey()));
+                        failDataList.addAll(sourceDataMap.get(entry.getKey()));
                     }
                 }
+                sendDataMap.clear();
+                sourceDataMap.clear();
                 if (CollectionUtils.isNotEmpty(failDataList)) {
                     List<String> wasteDataList = new ArrayList<>();
                     List<String> recycleDataList = new ArrayList<>();

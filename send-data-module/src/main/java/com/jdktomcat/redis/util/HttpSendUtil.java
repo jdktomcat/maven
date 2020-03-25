@@ -32,9 +32,7 @@ public class HttpSendUtil {
         } else {
             sendOk = false;
         }
-        logger.info(String.format("接口：%s 发送数据：%s 发送结果:%s", url, Arrays.toString(dataList.toArray()), sendOk));
-        // 打印日志
-        logger.info("记录日志");
+        logger.info(String.format("接口：%s 发送数据：%s 发送结果:%s 记录日志", url, Arrays.toString(dataList.toArray()), sendOk));
         return sendOk;
     }
 }

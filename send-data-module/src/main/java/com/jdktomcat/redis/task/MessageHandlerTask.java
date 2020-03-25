@@ -69,7 +69,6 @@ public class MessageHandlerTask implements Runnable {
                 Long startTime = System.currentTimeMillis();
                 Map<String, List<String>> dataMap = new HashedMap<>();
                 Map<String, Integer> messageSendMap = new HashedMap<>();
-                Map<String, Boolean> messageSendStateMap = new HashedMap<>();
                 List<String> messageList = new ArrayList<>();
                 while (handleCount < SendDataConstant.SEND_ITEM_MAX && (System.currentTimeMillis() - startTime < SendDataConstant.TIME_LIMIT_MAX)) {
                     String message = jedisCluster.rpoplpush(listName, bakListName);
@@ -92,13 +91,12 @@ public class MessageHandlerTask implements Runnable {
                         handleCount++;
                     }
                 }
-
+                Map<String, Boolean> messageSendStateMap = new HashedMap<>();
                 for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
-                    String url = entry.getKey();
-                    messageSendStateMap.put(url, HttpSendUtil.send(url, entry.getValue()));
+                    messageSendStateMap.put(entry.getKey(), HttpSendUtil.send(entry.getKey(), entry.getValue()));
                 }
                 for (String message : messageList) {
-                    logger.info(String.format("删除备份队列:%s中元素：%s 删除结果：%s", bakListName, message, jedisCluster.lrem(bakListName, 1, message)));
+                    logger.info(String.format("删除备份队列:%s中元素：%s 删除结果：%s", bakListName, message, jedisCluster.lrem(bakListName, -1, message)));
                 }
                 List<String> failDataList = new ArrayList<>();
                 for (Map.Entry<String, Boolean> entry : messageSendStateMap.entrySet()) {

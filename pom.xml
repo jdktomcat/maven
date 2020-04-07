@@ -29,6 +29,7 @@
         <module>spring-redis</module>
         <module>zk-dis-lock</module>
         <module>guava-demo</module>
+        <module>sentinel-limiter</module>
     </modules>
 
     <properties>

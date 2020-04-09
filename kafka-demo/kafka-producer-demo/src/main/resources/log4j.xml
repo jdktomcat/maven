@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>     
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration>
-	<appender name="CONSOLE-APPENDER" class="org.apache.log4j.ConsoleAppender">
+    <appender name="CONSOLE-APPENDER" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p [%X{traceId}/%c{1}] - %m%n"/>
         </layout>

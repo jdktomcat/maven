@@ -57,7 +57,7 @@ public class CuratorClient {
     }
 
     private static void print(Object result) {
-        System.out.println( result instanceof byte[] ? new String((byte[]) result) : result);
+        System.out.println(result instanceof byte[] ? new String((byte[]) result) : result);
     }
 
 }

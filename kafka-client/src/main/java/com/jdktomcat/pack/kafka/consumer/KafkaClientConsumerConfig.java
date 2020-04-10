@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -115,7 +116,7 @@ public class KafkaClientConsumerConfig {
             KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
             kafkaConsumer.subscribe(Collections.singletonList(topic));
             while (true) {
-                ConsumerRecords<String, String> records = kafkaConsumer.poll(500L);
+                ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(500L));
                 for (ConsumerRecord<String, String> record : records) {
                     log.info(String.format("kafka消息：%s", record.value()));
                 }

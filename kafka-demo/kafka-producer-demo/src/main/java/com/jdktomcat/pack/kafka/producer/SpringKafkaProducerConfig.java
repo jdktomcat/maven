@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +19,6 @@ import java.util.Map;
  * @date 2020-03-2020/3/19 20:36
  */
 @Configuration
-@EnableTransactionManagement
 public class SpringKafkaProducerConfig {
 
 
@@ -53,20 +50,7 @@ public class SpringKafkaProducerConfig {
      */
     @Bean
     public ProducerFactory<String, String> producerFactory() {
-        DefaultKafkaProducerFactory<String, String> producerFactory = new DefaultKafkaProducerFactory<>(producerConfigs());
-        producerFactory.setTransactionIdPrefix("tran-");
-        return producerFactory;
-    }
-
-    /**
-     * kafka事务管理器
-     *
-     * @param producerFactory 生产者工厂
-     * @return 事务管理器
-     */
-    @Bean
-    public KafkaTransactionManager<String, String> transactionManager(ProducerFactory<String, String> producerFactory) {
-        return new KafkaTransactionManager<>(producerFactory);
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     /**

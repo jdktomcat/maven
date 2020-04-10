@@ -30,6 +30,7 @@
         <module>zk-dis-lock</module>
         <module>guava-demo</module>
         <module>sentinel-limiter</module>
+        <module>kafka-client</module>
     </modules>
 
     <properties>

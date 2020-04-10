@@ -31,7 +31,7 @@ public class SpringKafkaConsumerConfig {
     /**
      * 消费组
      */
-    @Value("${kafka.customer.group.id:ads_marketing}")
+    @Value("${kafka.customer.group.id:ads_marketing_id}")
     private String groupIdConfig;
 
     /**

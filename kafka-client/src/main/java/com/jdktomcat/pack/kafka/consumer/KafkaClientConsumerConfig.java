@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -113,7 +113,7 @@ public class KafkaClientConsumerConfig {
             Properties props = getConsumerProp();
             log.info(String.format("kafka消费者配置信息：%s", props.toString()));
             KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
-            kafkaConsumer.subscribe(Arrays.asList(topic));
+            kafkaConsumer.subscribe(Collections.singletonList(topic));
             while (true) {
                 ConsumerRecords<String, String> records = kafkaConsumer.poll(500L);
                 for (ConsumerRecord<String, String> record : records) {

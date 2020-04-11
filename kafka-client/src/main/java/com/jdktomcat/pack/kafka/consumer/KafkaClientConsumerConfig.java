@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +50,7 @@ public class KafkaClientConsumerConfig {
     /**
      * 最大拉取条数
      */
-    @Value("${kafka.max.poll.records.show_click_log_v1:200}")
+    @Value("${kafka.max.poll.records.show_click_log_v1:10}")
     private Integer maxPollRecord;
 
     /**
@@ -76,7 +77,6 @@ public class KafkaClientConsumerConfig {
     @Value("${kafka.show.click.password:bDFncFh5YzRqVQ==}")
     private String password;
 
-
     /**
      * 获取消费者配置信息
      *
@@ -85,16 +85,21 @@ public class KafkaClientConsumerConfig {
     private Properties getConsumerProp() {
         // 参数设置
         Properties props = new Properties();
-        // 服务地址配置
+        // kafka消费的的地址
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        // 消费组配置
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        // 自动提交间隔时长配置
-        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitIntervalMs);
-        // 一次拉取最大条数配置
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecord);
+        // 组名 不同组名可以重复消费
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group_7");
+        // 超时时间
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
+        // 一次最大拉取的条数
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
+//				topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        // 序列化
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "client_1");
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         // 是否开启sasl
         if (needSasl) {
             props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
@@ -106,19 +111,17 @@ public class KafkaClientConsumerConfig {
         return props;
     }
 
-
     @PostConstruct
     public void init() {
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            Properties props = getConsumerProp();
-            log.info(String.format("kafka消费者配置信息：%s", props.toString()));
-            KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
-            kafkaConsumer.subscribe(Collections.singletonList(topic));
-            while (true) {
-                ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(500L));
-                for (ConsumerRecord<String, String> record : records) {
-                    log.info(String.format("kafka消息：%s", record.value()));
+            try (KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(getConsumerProp())) {
+                kafkaConsumer.subscribe(Collections.singletonList("stat_ads-log_show-click"));
+                while (true) {
+                    ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(500L));
+                    for (ConsumerRecord<String, String> record : records) {
+                        log.info(String.format("kafka消息：%s", record.value()));
+                    }
                 }
             }
         });

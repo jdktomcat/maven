@@ -33,7 +33,7 @@ public class SpringKafkaProducer {
      * @param message 消息
      */
     public void send(String message) throws Exception {
-        ListenableFuture<SendResult<String, String>> future1 = kafkaTemplate.send("stat_ads-log_show-click_1", message);
+        ListenableFuture<SendResult<String, String>> future1 = kafkaTemplate.send("task_log_monitor_topic", message);
         future1.addCallback(result -> {
             logger.info("发送队列1成功：" + result.toString());
         }, ex -> {
@@ -46,8 +46,8 @@ public class SpringKafkaProducer {
      */
     @PostConstruct
     public void init() {
-        String message = "";
-        for (int index = 0; index < 100000; index++) {
+        String message = "3434343";
+        for (int index = 0; index < 100; index++) {
             try {
                 send(message);
             } catch (Exception ex) {

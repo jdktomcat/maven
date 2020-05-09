@@ -32,6 +32,7 @@
         <module>sentinel-limiter</module>
         <module>kafka-client</module>
         <module>rabbitmq-demo</module>
+        <module>spring-redis-lettuce</module>
     </modules>
 
     <properties>

@@ -19,7 +19,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.jdktomcat.pack.kafka.SpringKafkaProducerContextRunner</mainClass>
+                            <mainClass>com.jdktomcat.pack.com.jdktomcat.pack.redis.SpringRedisContextRunner</mainClass>
                             <classpathPrefix>libs/</classpathPrefix>
                         </manifest>
                     </archive>

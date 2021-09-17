@@ -1,0 +1,8 @@
+logbook:
+  write:
+    level: info #logbook日志输入级别
+  format:
+    style: curl #这个值还可以是 http、json等
+  filter:
+    enabled: true
+

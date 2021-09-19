@@ -1,8 +1,15 @@
+
+spring:
+  application:
+    name: spring-boot-logbook
+
 logbook:
-  write:
-    level: info #logbook日志输入级别
   format:
-    style: curl #这个值还可以是 http、json等
+    style: curl
   filter:
     enabled: true
-
+  write:
+    max-body-size: -1
+  include: /logbook
+logging:
+  config: classpath:logback-spring.xml

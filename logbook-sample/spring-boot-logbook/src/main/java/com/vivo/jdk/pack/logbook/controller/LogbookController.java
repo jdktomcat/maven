@@ -1,8 +1,11 @@
 package com.vivo.jdk.pack.logbook.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 类概述：日志记录控制器
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tangqi
  * @date 2021-09-17
  */
+@Slf4j
 @RestController
 public class LogbookController {
 
@@ -19,7 +23,8 @@ public class LogbookController {
      * @return 响应体
      */
     @RequestMapping(method = RequestMethod.GET, value = "/logbook")
-    public String receiveData() {
+    public String receiveData(HttpServletRequest request) {
+        log.info("request from:{}", request.getRemoteHost());
         return "Logbook";
     }
 }

@@ -35,13 +35,10 @@ public class PoolingHttpClientConnectionManagerBean {
 
     @Bean("poolingClientConnectionManager")
     public PoolingHttpClientConnectionManager poolingClientConnectionManager() {
-
-        PoolingHttpClientConnectionManager
-            poolingClientConnectionManager = new PoolingHttpClientConnectionManager(TIME_TO_LIVE, TimeUnit.SECONDS);
+        PoolingHttpClientConnectionManager poolingClientConnectionManager = new PoolingHttpClientConnectionManager(TIME_TO_LIVE, TimeUnit.SECONDS);
         poolingClientConnectionManager.setMaxTotal(CONN_MAX_TOTAL);
         poolingClientConnectionManager.setDefaultMaxPerRoute(MAX_PRE_ROUTE);
         poolingClientConnectionManager.setValidateAfterInactivity(VALIDATE_AFTER_INACTIVITY);
-
         return poolingClientConnectionManager;
     }
 }

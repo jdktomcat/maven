@@ -12,6 +12,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
+import org.zalando.logbook.*;
+import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
+import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 
 import javax.annotation.Resource;
 import javax.net.ssl.SSLContext;
@@ -80,11 +83,9 @@ public class HttpClientManagerFactory implements FactoryBean<CloseableHttpClient
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        /*
-         * 建议此处使用HttpClients.custom的方式来创建HttpClientBuilder，而不要使用HttpClientBuilder.create()方法来创建HttpClientBuilder
-         * 从官方文档可以得出，HttpClientBuilder是非线程安全的，但是HttpClients确实Immutable的，immutable 对象不仅能够保证对象的状态不被改变，
-         * 而且还可以不使用锁机制就能被其他线程共享
-         */
+        // 建议此处使用HttpClients.custom的方式来创建HttpClientBuilder，而不要使用HttpClientBuilder.create()方法来创建HttpClientBuilder
+        // 从官方文档可以得出，HttpClientBuilder是非线程安全的，但是HttpClients确实Immutable的，immutable 对象不仅能够保证对象的状态不被改变，
+        // 而且还可以不使用锁机制就能被其他线程共享
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout(CONNECT_REQUEST_TIME_OUT)
                 .setConnectTimeout(CONNECT_TIME_OUT)
@@ -105,6 +106,9 @@ public class HttpClientManagerFactory implements FactoryBean<CloseableHttpClient
                 return null;
             }
         }}, new SecureRandom());
+
+        Logbook logbook = Logbook.builder().sink(new DefaultSink(new CurlHttpLogFormatter(), new DefaultHttpLogWriter())).build();
+
         this.client = HttpClients.custom().setConnectionManager(poolingClientConnectionManager)
                 .setRetryHandler((exception, executionCount, context) -> {
                     // Do not retry if over max retry count,如果重试次数超过了retryTime,则不再重试请求
@@ -134,6 +138,8 @@ public class HttpClientManagerFactory implements FactoryBean<CloseableHttpClient
                 })
                 .setSslcontext(sslContext)
                 .setDefaultRequestConfig(requestConfig)
+                .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
+                .addInterceptorFirst(new LogbookHttpResponseInterceptor())
                 .build();
     }
 

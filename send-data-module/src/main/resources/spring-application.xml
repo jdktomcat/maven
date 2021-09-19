@@ -15,7 +15,7 @@
         <property name="maxIdle" value="${zk.redis.maxIdle}"/>
     </bean>
 
-    <bean id="jedisCluster" class="com.jdktomcat.redis.config.JedisClusterFactory">
+    <bean id="jedisCluster" class="com.sid.mvn.redis.config.JedisClusterFactory">
         <property name="clusterAddress" value="${zk.redis.cluster.address}"/>
         <property name="connectionTimeout" value="${zk.redis.connectionTimeout}"/>
         <property name="soTimeout" value="${zk.redis.soTimeout}"/>

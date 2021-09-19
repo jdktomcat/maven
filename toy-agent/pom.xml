@@ -32,7 +32,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Premain-Class>com.jdktomcat.pack.instrument.ProfilerMonitorAgent</Premain-Class>
+                            <Premain-Class>com.sid.mvn.pack.instrument.ProfilerMonitorAgent</Premain-Class>
                             <Boot-Class-Path>
                                 G:/repository/org/javassist/javassist/3.26.0-GA/javassist-3.26.0-GA.jar
                             </Boot-Class-Path>

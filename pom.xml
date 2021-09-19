@@ -36,6 +36,7 @@
         <module>helidon-web-server</module>
         <module>receive-data-module</module>
         <module>logbook-sample</module>
+        <module>distributed-lock</module>
     </modules>
 
     <properties>

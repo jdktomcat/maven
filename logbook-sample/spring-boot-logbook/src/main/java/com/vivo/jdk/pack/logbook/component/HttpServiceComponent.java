@@ -130,8 +130,7 @@ public class HttpServiceComponent {
      * @return true：需要 false：不需要
      */
     private boolean isNeedReadStringEntity(HttpResponse httpResponse) {
-        return httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK
-                || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR;
+        return httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK || httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR;
     }
 
 

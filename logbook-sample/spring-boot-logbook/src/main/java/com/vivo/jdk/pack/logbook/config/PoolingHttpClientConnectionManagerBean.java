@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 〈连接池管理〉
+ * 连接池管理
  *
- * @author yinglie
+ * @author tangqi
  * @date 2019-04-09
  * @since 1.0.0
  */

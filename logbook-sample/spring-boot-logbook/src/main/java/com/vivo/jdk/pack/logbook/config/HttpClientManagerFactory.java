@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.logbook.config;
+package com.sid.mvn.pack.logbook.config;
 
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;

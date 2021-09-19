@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.logbook;
+package com.sid.mvn.pack.logbook;
 
 import lombok.extern.log4j.Log4j;
 import org.springframework.boot.SpringApplication;

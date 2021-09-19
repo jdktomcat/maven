@@ -1,6 +1,6 @@
-package com.vivo.jdk.pack.es.spring.data.repository;
+package com.sid.mvn.pack.es.spring.data.repository;
 
-import com.vivo.jdk.pack.es.spring.data.entry.Order;
+import com.sid.mvn.pack.es.spring.data.entry.Order;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;

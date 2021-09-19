@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.http;
+package com.sid.mvn.pack.http;
 
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;

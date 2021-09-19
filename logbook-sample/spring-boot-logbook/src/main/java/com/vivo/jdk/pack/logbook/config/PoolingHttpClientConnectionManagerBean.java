@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.logbook.config;
+package com.sid.mvn.pack.logbook.config;
 
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.context.annotation.Bean;

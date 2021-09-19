@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.logbook.controller;
+package com.sid.mvn.pack.logbook.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;

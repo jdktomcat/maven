@@ -8,11 +8,11 @@
                             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!-- bean管理支持注解 -->
-    <context:component-scan base-package="com.vivo.jdk.pack.es.spring.data"/>
+    <context:component-scan base-package="com.sid.mvn.pack.es.spring.data"/>
 
     <!-- Spring data 自动扫描repository接口，生成实现类 -->
     <elasticsearch:repositories
-            base-package="com.vivo.jdk.pack.es.spring.data.es.spring.data.es.spring.data.repository"/>
+            base-package="com.sid.mvn.pack.es.spring.data.es.spring.data.es.spring.data.repository"/>
 
     <!-- ip:port换成具体的ip和端口，多个以逗号分隔 -->
     <elasticsearch:transport-client id="client"

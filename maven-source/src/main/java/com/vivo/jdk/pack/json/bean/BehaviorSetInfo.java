@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.json.bean;
+package com.sid.mvn.pack.json.bean;
 
 import lombok.Data;
 

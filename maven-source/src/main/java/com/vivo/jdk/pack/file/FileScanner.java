@@ -1,7 +1,7 @@
-package com.vivo.jdk.pack.file;
+package com.sid.mvn.pack.file;
 
-import com.vivo.jdk.pack.excel.ExcelUtil;
-import com.vivo.jdk.pack.md5.MD5Utils;
+import com.sid.mvn.pack.excel.ExcelUtil;
+import com.sid.mvn.pack.md5.MD5Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

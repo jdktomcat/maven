@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.json;
+package com.sid.mvn.pack.json;
 
 import com.alibaba.fastjson.JSONObject;
 

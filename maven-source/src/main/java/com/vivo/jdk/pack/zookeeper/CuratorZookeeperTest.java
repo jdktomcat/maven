@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.zookeeper;
+package com.sid.mvn.pack.zookeeper;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;

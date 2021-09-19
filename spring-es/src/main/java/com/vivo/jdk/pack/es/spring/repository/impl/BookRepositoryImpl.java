@@ -1,8 +1,8 @@
-package com.vivo.jdk.pack.es.spring.repository.impl;
+package com.sid.mvn.pack.es.spring.repository.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.vivo.jdk.pack.es.spring.entry.Book;
-import com.vivo.jdk.pack.es.spring.repository.BookRepository;
+import com.sid.mvn.pack.es.spring.entry.Book;
+import com.sid.mvn.pack.es.spring.repository.BookRepository;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;

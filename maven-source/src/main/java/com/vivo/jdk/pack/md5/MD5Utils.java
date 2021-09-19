@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.md5;
+package com.sid.mvn.pack.md5;
 
 import java.security.MessageDigest;
 

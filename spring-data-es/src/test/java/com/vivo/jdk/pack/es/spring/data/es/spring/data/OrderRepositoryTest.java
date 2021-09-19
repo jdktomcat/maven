@@ -1,7 +1,7 @@
-package com.vivo.jdk.pack.es.spring.data.es.spring.data;
+package com.sid.mvn.pack.es.spring.data.es.spring.data;
 
-import com.vivo.jdk.pack.es.spring.data.entry.Order;
-import com.vivo.jdk.pack.es.spring.data.repository.OrderRepository;
+import com.sid.mvn.pack.es.spring.data.entry.Order;
+import com.sid.mvn.pack.es.spring.data.repository.OrderRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

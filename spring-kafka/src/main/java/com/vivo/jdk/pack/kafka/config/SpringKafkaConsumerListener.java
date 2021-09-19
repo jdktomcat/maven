@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.kafka.config;
+package com.sid.mvn.pack.kafka.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;

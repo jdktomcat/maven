@@ -1,7 +1,7 @@
-package com.vivo.jdk.pack.logbook.component;
+package com.sid.mvn.pack.logbook.component;
 
-import com.vivo.jdk.pack.logbook.config.HttpClientManagerFactory;
-import com.vivo.jdk.pack.logbook.util.UriUtil;
+import com.sid.mvn.pack.logbook.config.HttpClientManagerFactory;
+import com.sid.mvn.pack.logbook.util.UriUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.es.spring.entry;
+package com.sid.mvn.pack.es.spring.entry;
 
 import lombok.Data;
 

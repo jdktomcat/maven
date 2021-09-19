@@ -1,7 +1,7 @@
-package com.vivo.jdk.pack.es.spring;
+package com.sid.mvn.pack.es.spring;
 
-import com.vivo.jdk.pack.es.spring.entry.Book;
-import com.vivo.jdk.pack.es.spring.repository.BookRepository;
+import com.sid.mvn.pack.es.spring.entry.Book;
+import com.sid.mvn.pack.es.spring.repository.BookRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

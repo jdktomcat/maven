@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.es.spring.config;
+package com.sid.mvn.pack.es.spring.config;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;

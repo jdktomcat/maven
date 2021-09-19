@@ -1,6 +1,6 @@
-package com.vivo.jdk.pack.es.spring.repository;
+package com.sid.mvn.pack.es.spring.repository;
 
-import com.vivo.jdk.pack.es.spring.entry.Book;
+import com.sid.mvn.pack.es.spring.entry.Book;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.logbook.util;
+package com.sid.mvn.pack.logbook.util;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;

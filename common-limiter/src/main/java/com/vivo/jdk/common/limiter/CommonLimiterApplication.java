@@ -1,4 +1,4 @@
-package com.vivo.jdk.common.limiter;
+package com.sid.mvn.common.limiter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.vivo.jdk.pack.kafka;
+package com.sid.mvn.pack.kafka;
 
 import lombok.extern.log4j.Log4j;
 import org.springframework.boot.SpringApplication;

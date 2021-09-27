@@ -2,6 +2,7 @@ package com.sid.mvn.pack.logbook.component;
 
 import com.sid.mvn.pack.logbook.config.HttpClientManagerFactory;
 import com.sid.mvn.pack.logbook.util.UriUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -12,8 +13,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,13 +25,9 @@ import java.util.Optional;
  * @author tangqi
  * @date 2021-02-20
  */
+@Slf4j
 @Component
 public class HttpServiceComponent {
-
-    /**
-     * 日志
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpServiceComponent.class);
 
     /**
      * HTTP客户端管理工厂
@@ -53,8 +48,7 @@ public class HttpServiceComponent {
         HttpPost httpPost = new HttpPost(UriUtil.buildUri(url, queryString));
         httpPost.setHeader(new BasicHeader("Content-Type", "application/json;charset=UTF-8"));
         httpPost.setEntity(new StringEntity(body, "UTF-8"));
-        Optional.ofNullable(headers).ifPresent(
-                v -> v.forEach((key, value) -> httpPost.setHeader(new BasicHeader(key, value))));
+        Optional.ofNullable(headers).ifPresent(v -> v.forEach((key, value) -> httpPost.setHeader(new BasicHeader(key, value))));
         return executeRequest(httpPost);
     }
 
@@ -68,8 +62,7 @@ public class HttpServiceComponent {
      */
     public String get(String url, Map<String, String> params, Map<String, String> headers) {
         HttpGet httpGet = new HttpGet(UriUtil.buildUri(url, params));
-        Optional.ofNullable(headers).ifPresent(
-                v -> v.forEach((key, value) -> httpGet.setHeader(new BasicHeader(key, value))));
+        Optional.ofNullable(headers).ifPresent(v -> v.forEach((key, value) -> httpGet.setHeader(new BasicHeader(key, value))));
         return executeRequest(httpGet);
     }
 
@@ -94,28 +87,25 @@ public class HttpServiceComponent {
             if (httpClient != null) {
                 httpResponse = httpClient.execute(httpRequestBase);
                 if (httpResponse == null) {
-                    LOGGER.warn("execute request fail. url={}, response={}", httpRequestBase.getURI(),
-                            "null");
+                    log.warn("execute request fail. url={}, response={}", httpRequestBase.getURI(), "null");
                     return "";
                 }
                 if (!isNeedReadStringEntity(httpResponse)) {
-                    LOGGER.warn("execute request fail. url={}, response={}", httpRequestBase.getURI(),
-                            httpResponse.getStatusLine());
+                    log.warn("execute request fail. url={}, response={}", httpRequestBase.getURI(), httpResponse.getStatusLine());
                     return httpResponse.toString();
                 }
                 entity = httpResponse.getEntity();
                 if (entity == null) {
-                    LOGGER.warn("response entity is null. url={}, response={}", httpRequestBase.getURI(),
-                            httpResponse.getStatusLine());
+                    log.warn("response entity is null. url={}, response={}", httpRequestBase.getURI(), httpResponse.getStatusLine());
                     return httpResponse.toString();
                 }
                 return EntityUtils.toString(entity, "UTF-8");
             } else {
-                LOGGER.error("get http client fail!");
+                log.error("get http client fail!");
                 return "";
             }
         } catch (Exception ex) {
-            LOGGER.warn("executeRequest unknown error. url={}, e={}", httpRequestBase.getURI(), ex);
+            log.warn("execute Request unknown error. url={}, e={}", httpRequestBase.getURI(), ex);
             return ex.getMessage();
         } finally {
             consumeEntity(entity);
@@ -141,7 +131,7 @@ public class HttpServiceComponent {
             }
             EntityUtils.consume(entity);
         } catch (Exception e) {
-            LOGGER.warn("consumeEntity exception.", e);
+            log.warn("consumeEntity exception.", e);
         }
     }
 }

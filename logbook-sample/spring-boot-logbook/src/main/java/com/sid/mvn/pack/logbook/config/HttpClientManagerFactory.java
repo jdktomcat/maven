@@ -34,6 +34,10 @@ import java.security.cert.X509Certificate;
  */
 @Component
 public class HttpClientManagerFactory implements FactoryBean<CloseableHttpClient>, InitializingBean, DisposableBean {
+
+    /**
+     * 客户端连接池管理器
+     */
     @Resource(name = "poolingClientConnectionManager")
     private PoolingHttpClientConnectionManager poolingClientConnectionManager;
 
@@ -92,20 +96,21 @@ public class HttpClientManagerFactory implements FactoryBean<CloseableHttpClient
                 .setSocketTimeout(SOCKET_TIME_OUT)
                 .build();
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[]{new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType) {
-            }
+        sslContext.init(null, new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) {
+                    }
 
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType) {
-            }
+                    @Override
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                    }
 
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-        }}, new SecureRandom());
+                    @Override
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }}, new SecureRandom());
 
         Logbook logbook = Logbook.builder().sink(new DefaultSink(new CurlHttpLogFormatter(), new DefaultHttpLogWriter())).build();
 

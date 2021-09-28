@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 @Configuration
-public class PoolingHttpClientConnectionManagerBean {
+public class HttpClientPoolingConfig {
 
     /**
      * 连接池总路由最大连接数
@@ -31,8 +31,16 @@ public class PoolingHttpClientConnectionManagerBean {
      */
     private static final int TIME_TO_LIVE = 60;
 
-    private final static int VALIDATE_AFTER_INACTIVITY  = 1000;
+    /**
+     * 存活时长
+     */
+    private final static int VALIDATE_AFTER_INACTIVITY = 1000;
 
+    /**
+     * 链接线程池管理器
+     *
+     * @return 链接线程池管理器
+     */
     @Bean("poolingClientConnectionManager")
     public PoolingHttpClientConnectionManager poolingClientConnectionManager() {
         PoolingHttpClientConnectionManager poolingClientConnectionManager = new PoolingHttpClientConnectionManager(TIME_TO_LIVE, TimeUnit.SECONDS);

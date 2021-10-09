@@ -15,7 +15,7 @@
         <!--设置策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件路径：这里%d{yyyyMMdd}表示按天分类日志-->
-            <FileNamePattern>${LOG_HOME}/%d{yyyyMMdd}/${APP_NAME}.log</FileNamePattern>
+            <FileNamePattern>${LOG_HOME}/${APP_NAME}.log.%d{yyyyMMdd}</FileNamePattern>
             <!--日志保留天数-->
             <MaxHistory>15</MaxHistory>
         </rollingPolicy>
@@ -34,7 +34,7 @@
         <!--设置策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件路径：这里%d{yyyyMMdd}表示按天分类日志-->
-            <FileNamePattern>${LOG_HOME}/%d{yyyyMMdd}/${APP_NAME}-http.log</FileNamePattern>
+            <FileNamePattern>${LOG_HOME}/${APP_NAME}-http.log.%d{yyyyMMdd}</FileNamePattern>
             <!--日志保留天数-->
             <MaxHistory>15</MaxHistory>
         </rollingPolicy>
@@ -55,12 +55,7 @@
 
     <!--root节点 全局日志级别，用来指定最基础的日志输出级别-->
     <root level="INFO">
-        <appender-ref ref="FILE"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 
-    <!-- 子节点向上级传递 局部日志级别-->
-<!--    <logger level="WARN" name="org.springframework"/>-->
-<!--    <logger level="WARN" name="com.netflix"/>-->
-<!--    <logger level="DEBUG" name="org.hibernate.SQL"/>-->
 </configuration>

@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>spring-boot-logbook</module>
+        <module>empty-maven</module>
     </modules>
 
     <properties>

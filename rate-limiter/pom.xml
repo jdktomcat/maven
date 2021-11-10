@@ -11,11 +11,28 @@
 
     <artifactId>rate-limiter</artifactId>
 
+    <properties>
+        <jedis.version>2.9.0</jedis.version>
+        <junit.version>4.13.1</junit.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>26.0-jre</version>
+            <version>31.0.1-jre</version>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
 </project>

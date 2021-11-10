@@ -1,4 +1,4 @@
-package com.sid.mvn.common.distribute.ratelimiter;
+package com.sid.mvn.common.single.ratelimiter;
 
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;

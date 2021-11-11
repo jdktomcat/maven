@@ -37,6 +37,7 @@
         <module>receive-data-module</module>
         <module>logbook-sample</module>
         <module>distributed-lock</module>
+        <module>distribute-limiter</module>
     </modules>
 
     <properties>

@@ -179,12 +179,10 @@ public class RedLimiter {
         long waitMicros;
         if (jedisPool != null) {
             try (Jedis jedis = jedisPool.getResource()) {
-                waitMicros = (long) jedis.evalsha(sha1, 1, key, "acquire",
-                        Double.toString(qps), Long.toString(nowMicros));
+                waitMicros = (long) jedis.evalsha(sha1, 1, key, "acquire", Double.toString(qps), Long.toString(nowMicros));
             }
         } else {
-            waitMicros = (long) jedisCluster.evalsha(sha1, 1, key, "acquire",
-                    Double.toString(qps), Long.toString(nowMicros));
+            waitMicros = (long) jedisCluster.evalsha(sha1, 1, key, "acquire", Double.toString(qps), Long.toString(nowMicros));
         }
         double wait = 1.0 * waitMicros / SECONDS.toMicros(1L);
         if (waitMicros > 0) {

@@ -2,14 +2,5 @@
 spring:
   application:
     name: spring-boot-logbook
-
-logbook:
-  format:
-    style: curl
-  filter:
-    enabled: true
-  write:
-    max-body-size: -1
-  include: /logbook
 logging:
   config: classpath:logback-spring.xml

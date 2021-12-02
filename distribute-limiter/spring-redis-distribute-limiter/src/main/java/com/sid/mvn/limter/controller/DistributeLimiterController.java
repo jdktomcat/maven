@@ -31,6 +31,6 @@ public class DistributeLimiterController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/call")
     public String call() {
-        return redisDistributeLimiterComponent.acquire(15) + "";
+        return redisDistributeLimiterComponent.acquire(1) + "";
     }
 }

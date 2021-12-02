@@ -25,6 +25,7 @@
         <module>common-limiter</module>
         <module>rate-limiter</module>
         <module>send-data-module</module>
+        <module>spring-boot-test</module>
         <module>kafka-demo</module>
         <module>spring-redis</module>
         <module>zk-dis-lock</module>

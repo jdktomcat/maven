@@ -1,7 +1,6 @@
 package com.sid.mvn.test.web.controller;
 
-import com.sid.mvn.test.SpringBootTestApplication;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -13,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author tangqi
  * @date 2021-12-02
  */
-@SpringBootTest(classes = {SpringBootTestApplication.class})
-public class HomeControllerTest {
+@SpringBootTest
+public class HomeControllerTests {
 
     @Autowired
     private HomeController homeController;

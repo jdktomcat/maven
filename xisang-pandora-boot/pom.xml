@@ -26,7 +26,7 @@
         <pandora-boot-maven-plugin.version>2.1.14.2</pandora-boot-maven-plugin.version>
         <velocity.starter.version>1.0.4.RELEASE</velocity.starter.version>
         <alibaba-security-dependency.version>2.1.0-SNAPSHOT</alibaba-security-dependency.version>
-        
+        <testcontainers.version>1.16.2</testcontainers.version>
     </properties>
 
     <modules>
@@ -106,6 +106,14 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>999-not-exist-v3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

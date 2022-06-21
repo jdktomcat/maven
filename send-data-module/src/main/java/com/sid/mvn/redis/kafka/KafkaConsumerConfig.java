@@ -3,13 +3,11 @@ package com.sid.mvn.redis.kafka;
 import com.sid.mvn.redis.constant.SendDataConstant;
 import com.sid.mvn.redis.zk.ZkCuratorDistributedState;
 import lombok.Data;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +21,10 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.JedisCluster;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +49,7 @@ public class KafkaConsumerConfig {
     /**
      * redis客户端
      */
-    @Autowired
+    @Resource
     private JedisCluster jedisCluster;
 
     /**
@@ -92,7 +92,7 @@ public class KafkaConsumerConfig {
     /**
      * 分布式配置
      */
-    @Autowired
+    @Resource
     private ZkCuratorDistributedState zkCuratorDistributedState;
 
     @Bean

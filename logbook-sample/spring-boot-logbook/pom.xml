@@ -45,9 +45,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.autonavi.poi.cms</groupId>
-            <artifactId>gds-poi-api</artifactId>
-            <version>3.0.10-RELEASE</version>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
         </dependency>
     </dependencies>
 

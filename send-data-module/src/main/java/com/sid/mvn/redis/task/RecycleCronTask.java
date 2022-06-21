@@ -2,11 +2,11 @@ package com.sid.mvn.redis.task;
 
 import com.sid.mvn.redis.constant.SendDataConstant;
 import com.sid.mvn.redis.zk.ZkCuratorDistributedState;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.JedisCluster;
 
 import java.text.SimpleDateFormat;
@@ -69,7 +69,7 @@ public class RecycleCronTask {
                         jedisCluster.lrem(bakListName, -1, member);
                     }
                 }
-                if (CollectionUtils.isNotEmpty(recycleList)) {
+                if (!CollectionUtils.isEmpty(recycleList)) {
                     jedisCluster.rpush(listName, recycleList.toArray(new String[0]));
                 }
                 releaseLock(i);

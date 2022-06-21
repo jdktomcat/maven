@@ -1,7 +1,6 @@
 package com.sid.mvn.pack.kafka.consumer.listener;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.log4j.Logger;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -18,10 +17,6 @@ import java.util.List;
 @Component
 @EnableKafka
 public class SpringKafkaConsumerListener {
-    /**
-     * 日志
-     */
-    private static final Logger logger = Logger.getLogger(SpringKafkaConsumerListener.class);
 
     /**
      * kafka主题监控监听器回调函数
@@ -32,7 +27,7 @@ public class SpringKafkaConsumerListener {
     @KafkaListener(topics = "stat_ads-log_show-click", containerFactory = "batchFactory")
     public void listenBatch(List<ConsumerRecord<String, String>> records, Acknowledgment ack) {
         for (ConsumerRecord<String, String> record : records) {
-            logger.info(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));
+            System.out.println(String.format("消费者获取，分区：%s,消息offset:%s,消息键:%s,消息体：%s", record.partition(), record.offset(), record.key(), record.value()));
         }
         ack.acknowledge();
     }

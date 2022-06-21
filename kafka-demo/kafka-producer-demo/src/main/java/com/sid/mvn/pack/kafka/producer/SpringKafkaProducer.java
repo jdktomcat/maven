@@ -1,6 +1,5 @@
 package com.sid.mvn.pack.kafka.producer;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -18,12 +17,6 @@ import javax.annotation.PostConstruct;
 @Component
 public class SpringKafkaProducer {
 
-    /**
-     * 日志
-     */
-    private static final Logger logger = Logger.getLogger(SpringKafkaProducer.class);
-
-
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
@@ -35,9 +28,9 @@ public class SpringKafkaProducer {
     public void send(String message) throws Exception {
         ListenableFuture<SendResult<String, String>> future1 = kafkaTemplate.send("stat_ads-log_show-click", message);
         future1.addCallback(result -> {
-            logger.info("发送队列1成功：" + result.toString());
+            System.out.println("发送队列1成功：" + result.toString());
         }, ex -> {
-            logger.error("发送队列1失败：" + ex.toString());
+            System.out.println("发送队列1失败：" + ex.toString());
         });
     }
 
@@ -51,7 +44,7 @@ public class SpringKafkaProducer {
             try {
                 send(message);
             } catch (Exception ex) {
-                logger.error(ex.getMessage());
+                System.out.println(ex.getMessage());
             }
         }
     }

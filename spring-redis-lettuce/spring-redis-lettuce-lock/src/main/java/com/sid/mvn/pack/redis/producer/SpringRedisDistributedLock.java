@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
  * @author 11072131
  * @date 2020-03-2020/3/28 16:33
  */
-@Log4j
 @Component
 public class SpringRedisDistributedLock {
 

@@ -7,7 +7,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,8 +25,6 @@ import java.util.concurrent.Executors;
  */
 @Configuration
 public class KafkaClientConsumerConfig {
-
-    private static final Logger log = Logger.getLogger(KafkaClientConsumerConfig.class);
 
     /**
      * 配置服务器地址
@@ -104,9 +101,7 @@ public class KafkaClientConsumerConfig {
         if (needSasl) {
             props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT");
             props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-256");
-            props.put(SaslConfigs.SASL_JAAS_CONFIG, String.format(
-                    "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";",
-                    username, password));
+            props.put(SaslConfigs.SASL_JAAS_CONFIG, String.format("org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";", username, password));
         }
         return props;
     }
@@ -120,7 +115,7 @@ public class KafkaClientConsumerConfig {
                 while (true) {
                     ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(500L));
                     for (ConsumerRecord<String, String> record : records) {
-                        log.info(String.format("kafka消息：%s", record.value()));
+                        System.out.println(String.format("kafka消息：%s", record.value()));
                     }
                 }
             }

@@ -3,16 +3,12 @@ package com.sid.mvn.redis.task;
 import com.sid.mvn.redis.constant.SendDataConstant;
 import com.sid.mvn.redis.util.HttpSendUtil;
 import com.sid.mvn.redis.zk.ZkCuratorDistributedState;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.JedisCluster;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 类描述：消息处理任务
@@ -68,9 +64,9 @@ public class MessageHandlerTask implements Runnable {
                 int handleCount = 0;
                 Long startTime = System.currentTimeMillis();
                 // 队列元素信息聚合
-                Map<String, List<String>> sourceDataMap = new HashedMap<>();
+                Map<String, List<String>> sourceDataMap = new HashMap<>();
                 // 发送数据数据聚合
-                Map<String, List<String>> sendDataMap = new HashedMap<>();
+                Map<String, List<String>> sendDataMap = new HashMap<>();
                 // 发送消息列表
                 List<String> messageList = new ArrayList<>();
                 while (handleCount < SendDataConstant.SEND_ITEM_MAX && (System.currentTimeMillis() - startTime < SendDataConstant.TIME_LIMIT_MAX)) {
@@ -98,7 +94,7 @@ public class MessageHandlerTask implements Runnable {
                         handleCount++;
                     }
                 }
-                Map<String, Boolean> messageSendStateMap = new HashedMap<>();
+                Map<String, Boolean> messageSendStateMap = new HashMap<>();
                 for (Map.Entry<String, List<String>> entry : sendDataMap.entrySet()) {
                     messageSendStateMap.put(entry.getKey(), HttpSendUtil.send(entry.getKey(), entry.getValue()));
                 }
@@ -113,7 +109,7 @@ public class MessageHandlerTask implements Runnable {
                 }
                 sendDataMap.clear();
                 sourceDataMap.clear();
-                if (CollectionUtils.isNotEmpty(failDataList)) {
+                if (!CollectionUtils.isEmpty(failDataList)) {
                     List<String> wasteDataList = new ArrayList<>();
                     List<String> recycleDataList = new ArrayList<>();
                     for (String message : failDataList) {
@@ -127,12 +123,12 @@ public class MessageHandlerTask implements Runnable {
                             recycleDataList.add(String.format("%s||%s||%s||%s", url, infoJson, System.currentTimeMillis(), (sendCount + 1)));
                         }
                     }
-                    if (CollectionUtils.isNotEmpty(recycleDataList)) {
+                    if (!CollectionUtils.isEmpty(recycleDataList)) {
                         String[] memberArray = recycleDataList.toArray(new String[0]);
                         // 重发
                         logger.info(String.format("需要重新发送数据，队列名称：%s 元素：%s 队列长度：%s", listName, Arrays.toString(memberArray), jedisCluster.lpush(listName, memberArray)));
                     }
-                    if (CollectionUtils.isNotEmpty(wasteDataList)) {
+                    if (!CollectionUtils.isEmpty(wasteDataList)) {
                         // 回收
                         logger.info(String.format("保存到数据库元素:%s", Arrays.toString(wasteDataList.toArray(new String[0]))));
                     }

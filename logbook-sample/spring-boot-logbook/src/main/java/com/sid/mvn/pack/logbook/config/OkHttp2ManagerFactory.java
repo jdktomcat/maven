@@ -1,14 +1,10 @@
 package com.sid.mvn.pack.logbook.config;
 
 import okhttp3.OkHttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 /**
  * 类概述：OkHttp管理工厂

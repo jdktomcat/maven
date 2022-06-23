@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author tangqi
  * @date 2021-09-17
  */
-@Log4j
 @SpringBootApplication
 public class SpringBootLogbookApplication {
     public static void main(String[] args) {
